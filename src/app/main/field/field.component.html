@@ -1,0 +1,13 @@
+<div #field class="field" 
+     (mousemove)="onMouseMove($event)" 
+     (mousedown)="onMouseDown($event)" 
+     (mouseup)="onMouseUp($event)" 
+     (mouseleave)="hideTooltip()" 
+     style="border: 1px solid black;">
+     
+  <div #tooltip class="tooltip" [style.display]="tooltipVisible ? 'block' : 'none'" [style.left.px]="tooltipX" [style.top.px]="tooltipY">
+    {{ tooltipContent }}
+  </div>
+
+  <canvas #arrowCanvas class="arrow-canvas"></canvas>
+</div>

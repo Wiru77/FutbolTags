@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tag Editor</title>
+  
+</head>
+<body>
+
+
+  <div class="container">
+    <div *ngFor="let team of teams" class="column" id="teams">
+      <!-- Si está en modo edición, mostramos un input en lugar de un botón para el nombre del equipo -->
+      <input *ngIf="editMode" [(ngModel)]="team.name" />
+      <button *ngIf="!editMode">{{team.name}}</button>
+
+      <div *ngFor="let player of team.players" class="columnPlayers" id="players">
+        <!-- Si está en modo edición, mostramos un input en lugar de un botón para el nombre de los jugadores -->
+        <input *ngIf="editMode" [(ngModel)]="player.name" />
+        <button *ngIf="!editMode" (click)=playerSelect($event,team,player) (contextmenu)="onRightClick($event)">{{player.name}}</button>
+      </div>
+      
+    </div>
+  
+    <div class="column" id="tagsColumn">
+      <h3>Tags</h3>
+      <div *ngFor="let tag of tags">
+        <!-- Si está en modo edición, mostramos un input en lugar de un botón para los tags -->
+        <input *ngIf="editMode" [(ngModel)]="tag.label" />
+        <button *ngIf="!editMode" (click)="tagSelect(tag)">{{tag.label}}</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="buttons">
+    <button id="editTag" (click)="toggleEditMode()">{{editMode ? 'Save' : 'Edit'}}</button>
+    <button id="addTag" (click)="addTag()">Add Tag</button>
+  </div>
+  
+
+  
+
+
+

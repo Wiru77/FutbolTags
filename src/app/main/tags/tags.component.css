@@ -1,0 +1,73 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  width: 1000px; /* Ajustamos el ancho de la caja contenedora */
+  margin: 20px auto;
+  gap: 20px; /* Añade un espaciado de 20px entre las columnas */
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+}
+
+.column h3 {
+  text-align: center;
+}
+
+.column button, .column input {
+  background-color: #4CAF50; /* Mismo color de fondo para los botones y los inputs */
+  color: white; /* Color del texto */
+  border: none; /* Sin bordes */
+  padding: 15px; /* Añade padding para aumentar el tamaño del botón/input */
+  margin: 5px 0;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 18px; /* Aumenta el tamaño del texto */
+  width: 100%; /* Ocupa todo el ancho disponible */
+  box-sizing: border-box; /* Asegura que padding y border no cambien el tamaño */
+  transition: background-color 0.3s; /* Transición suave en el color de fondo */
+}
+
+.column button:hover, .column input:hover {
+  background-color: #1f7e26; /* Color más oscuro al pasar el mouse */
+}
+
+/* Evita que el input tenga un borde azul predeterminado al enfocarse */
+.column input:focus {
+  outline: none; /* Sin borde de foco */
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  margin-right: 450px;
+  margin-left: 870px;
+}
+
+#editTag, #addTag {
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: lightgray;
+}
+
+#editTag:hover, #addTag:hover {
+  background-color: gray;
+  color: white; 
+}
+
+/* Diseño de los tags */
+#tagsColumn {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Tres columnas */
+  gap: 10px; /* Espacio entre los botones/inputs */
+  width: 1000px;
+}
