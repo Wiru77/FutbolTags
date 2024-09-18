@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tag Editor 1</title>
+  <title>Tag</title>
   
 </head>
 <body>
@@ -25,7 +25,7 @@
     </div>
   
     <div class="column" id="tagsColumn">
-      <h3>Tags 1</h3>
+      <h3>Tags</h3>
       <div *ngFor="let tag of tags">
         <!-- Si está en modo edición, mostramos un input en lugar de un botón para los tags -->
         <input *ngIf="editMode" [(ngModel)]="tag.label" />
