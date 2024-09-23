@@ -61,4 +61,18 @@ export class MainComponent {
     console.log(this.dataList);
     
   }
+
+  onNewPlayer(player:any):void{
+    this.selectedPlayer1 = player;
+    console.log(player);
+    
+    
+  }
+
+  onNewPlayer2(player:any):void{
+    this.selectedPlayer2 = player;
+    console.log(player);
+    
+    
+  }
 }

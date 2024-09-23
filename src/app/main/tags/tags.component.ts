@@ -15,10 +15,14 @@ import * as XLSX from 'xlsx';
 export class TagsComponent {
 
 
-@Output()
-public onNewTag: EventEmitter<any> = new EventEmitter();
+@Output() public onNewTag: EventEmitter<any> = new EventEmitter();
+@Output() public onNewPlayer: EventEmitter<any> = new EventEmitter();
+@Output() public onNewPlayer2: EventEmitter<any> = new EventEmitter();
 
 data: any[] = [];
+public previousButton: any = null;
+public previousButtonRight: any = null;
+public previousButtonTag: any = null;
 public editMode: boolean = false; 
 public selectedPlayer:any = {};
 public selectedPlayer2: any = {};
@@ -124,7 +128,7 @@ onFileChange(event: any) {
       return newRow;
     });
 
-    console.log(this.tags);  // Aquí tienes los datos del archivo Excel convertidos a objetos con claves en minúsculas
+    
   };
 
   reader.readAsBinaryString(target.files[0]);
@@ -132,46 +136,117 @@ onFileChange(event: any) {
 
 
 
-tagSelect(tag:any){
+tagSelect(event:any, tag:any){
+
+  event.preventDefault();
+  
   this.selectedTag = tag
+
   this.onNewTag.emit(this.selectedTag);
+
+  let selectedButtonTag = document.getElementById(tag.label);
+
+  if (this.previousButtonTag) {
+    this.previousButtonTag.classList.remove("active_button_tag");
+  }
+
+  
+  selectedButtonTag?.classList.add("active_button_tag");
+
+  this.previousButtonTag = selectedButtonTag;
+
+  
+  
+  
 }
 
-playerSelect(event:any, team:any, player:any){
-
-  event.preventDefault()
+playerSelect(event: any, team: any, player: any) {
+  event.preventDefault();
+  
   this.selectedPlayer = {
-    team : team,
+    team : team.name,
     player : player 
   }
- 
-  console.log(this.selectedPlayer);
-  console.log(event);
+  this.onNewPlayer.emit(this.selectedPlayer);
+
+  let selectedButton = document.getElementById(player.name);
+  
+      if (selectedButton?.classList.contains("active_button_right")) {
+        selectedButton.classList.remove("active_button_right");
+      }
+
+      if (selectedButton?.classList.contains("active_button")) {
+
+        selectedButton.classList.remove("active_button");
+        this.previousButton = null;
+
+      } else {
+        
+        if (this.previousButton) {
+          this.previousButton.classList.remove("active_button");
+        }
+
+  selectedButton?.classList.add("active_button");
+
+  this.previousButton = selectedButton;
+
   
   
 }
 
+}
+
+playerSelect2(event: any, team: any, player: any) {
+  event.preventDefault();
+  
+      this.selectedPlayer2 = {
+        team: team.name,
+        player: player
+      };
+
+      console.log(team , player);
+      
+  this.onNewPlayer2.emit(this.selectedPlayer2);
+
+  let selectedButtonRight = document.getElementById(player.name);
+
+          if (selectedButtonRight?.classList.contains("active_button")) {
+            return;
+          }
+
+          if (selectedButtonRight?.classList.contains("active_button_right")) {
+
+            selectedButtonRight.classList.remove("active_button_right");
+            this.previousButtonRight = null;
+
+          } else {
+            
+            if (this.previousButtonRight) {
+              this.previousButtonRight.classList.remove("active_button_right");
+            }
+
+    selectedButtonRight?.classList.add("active_button_right");
+
+
+    this.previousButtonRight = selectedButtonRight;
+  }
+
+  
+  
+}
+
+  
+
 toggleEditMode() {
-  this.editMode = !this.editMode;
- // if (!this.editMode) {
-    // Aquí puedes guardar los cambios cuando el modo edición se desactiva
-    //console.log('Teams guardados:', this.teams);
-   //console.log('Tags guardados:', this.tags);
-  //}
+    this.editMode = !this.editMode;
+
 }
 
 addTag() {
-  // Lógica para agregar un nuevo tag
   this.tags.push({ name: 'Nuevo Tag', label: 'Nuevo', type: '1' });
-}
-
-onRightClick(event: MouseEvent): void {
-  event.preventDefault(); 
-
-  console.log(event);
-  
 
 }
+
 
 
 
