@@ -1,4 +1,4 @@
 <app-goal></app-goal>
-<app-field></app-field>
-<app-table></app-table>
+<app-field (clickCoordinates)="onCoordinatesReceived($event)"></app-field>
+<app-table [dataList]="dataList"></app-table>
 <app-tags (onNewTag)="onNewTag($event)"></app-tags>

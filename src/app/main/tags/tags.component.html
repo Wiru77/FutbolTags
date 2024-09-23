@@ -38,6 +38,9 @@
     <button id="editTag" (click)="toggleEditMode()">{{editMode ? 'Save' : 'Edit'}}</button>
     <button id="addTag" (click)="addTag()">Add Tag</button>
   </div>
+
+  <div>Carga de excel</div>
+  <input type="file" (change)="onFileChange($event)" />
   
 
   
