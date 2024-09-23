@@ -18,4 +18,14 @@ export class MainComponent {
     console.log(tag);
     
   }
+
+  onNewPlayer(player:any):void{
+    console.log(player);
+    
+  }
+
+  onNewPlayer2(player:any):void{
+    console.log(player);
+    
+  }
 }

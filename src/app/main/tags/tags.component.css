@@ -71,3 +71,17 @@ body {
   gap: 10px; /* Espacio entre los botones/inputs */
   width: 1000px;
 }
+
+
+.active_button_right {
+  background-color: rgb(233, 158, 37) !important;
+}
+
+.active_button_tag {
+  background-color: rgb(9, 72, 124) !important;
+}
+
+.active_button {
+  background-color: rgb(9, 72, 124) !important;
+}
+

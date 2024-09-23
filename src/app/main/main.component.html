@@ -1,4 +1,7 @@
 <app-goal></app-goal>
 <app-field></app-field>
 <app-table></app-table>
-<app-tags (onNewTag)="onNewTag($event)"></app-tags>
+<app-tags (onNewTag)="onNewTag($event)"
+          (onNewPlayer)="onNewPlayer($event)"
+          (onNewPlayer2)="onNewPlayer2($event)">
+</app-tags>
