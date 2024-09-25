@@ -29,38 +29,38 @@ public selectedPlayer2: any = {};
 public selectedTag:any = {};
 public tags:any[] = [
 
-    { name: 'centro', label: 'CTRO' }, // 1 no es portería, 2 es portería
-    { name: 'diagonal', label: 'DI' },
-    { name: 'remate', label: 'RMT' },
-    { name: 'uno vs uno ofensivo', label: '1vs1Of' },
-    { name: 'tiro a gol', label: 'T-G' },
-    { name: 'tiro con gol', label: 'T-C-G' },
-    { name: 'tiro de esquina', label: 'T-E' },
-    { name: 'tiro libre', label: 'T-L' },
-    { name: 'pase de semivolea', label: 'PSV' },
-    { name: 'fuera de lugar', label: 'F-L' },
+    { name: 'Centro', label: 'CTRO' }, // 1 no es portería, 2 es portería
+    { name: 'Diagonal', label: 'DI' },
+    { name: 'Remate', label: 'RMT' },
+    { name: 'Uno vs uno ofensivo', label: '1vs1Of' },
+    { name: 'Tiro a gol', label: 'T-G' },
+    { name: 'Tiro con gol', label: 'T-C-G' },
+    { name: 'Tiro de esquina', label: 'T-E' },
+    { name: 'Tiro libre', label: 'T-L' },
+    { name: 'Pase de semivolea', label: 'PSV' },
+    { name: 'Fuera de lugar', label: 'F-L' },
 
-    { name: 'parada', label: 'PRDA' }, // 1 no es portería, 2 es portería
-    { name: 'gol', label: 'Gol' },
-    { name: 'penal parado', label: 'P-PA' },
-    { name: 'penal no parado', label: 'P-N-P' },
-    { name: 'tiro fallado', label: 'T-F' },
-    { name: 'pase raso con control', label: 'P-R-C' },
-    { name: 'pase de primera', label: 'P-P' },
-    { name: 'pase elevado', label: 'P-E' },
-    { name: 'pase de profundidad', label: 'P-PR' },
-    { name: 'pase raso control errado', label: 'P-R-C-E'},
+    { name: 'Parada', label: 'PRDA' }, // 1 no es portería, 2 es portería
+    { name: 'Gol', label: 'Gol' },
+    { name: 'Penal parado', label: 'P-PA' },
+    { name: 'Penal no parado', label: 'P-N-P' },
+    { name: 'Tiro fallado', label: 'T-F' },
+    { name: 'Pase raso con control', label: 'P-R-C' },
+    { name: 'Pase de primera', label: 'P-P' },
+    { name: 'Pase elevado', label: 'P-E' },
+    { name: 'Pase de profundidad', label: 'P-PR' },
+    { name: 'Pase raso control errado', label: 'P-R-C-E'},
 
-    {name: 'pase de primera errado', label: 'P-P-E'}, // 1 no es portería, 2 es portería
-    {name: 'pase elevado errado', label: 'P-E-E'},
-    {name: 'pase de profundidad errado', label: 'P-PR-E'},
-    {name: 'control raso errado', label: 'C-R-E'},
-    {name: 'control media alto errado', label: 'C-MA-E'},
-    {name: 'despeje', label: 'D'},
-    {name: 'falta cometida', label: 'F-C'},
-    {name: 'intercepcion', label: 'I'},
-    {name: 'fildeo aereo ganado', label: 'F-A-G'},
-    {name: 'enfrentamiento ganado', label: 'E-G'}
+    {name: 'Pase de primera errado', label: 'P-P-E'}, // 1 no es portería, 2 es portería
+    {name: 'Pase elevado errado', label: 'P-E-E'},
+    {name: 'Pase de profundidad errado', label: 'P-PR-E'},
+    {name: 'Control raso errado', label: 'C-R-E'},
+    {name: 'Control media alto errado', label: 'C-MA-E'},
+    {name: 'Despeje', label: 'D'},
+    {name: 'Falta cometida', label: 'F-C'},
+    {name: 'Intercepcion', label: 'I'},
+    {name: 'Fildeo aereo ganado', label: 'F-A-G'},
+    {name: 'Enfrentamiento ganado', label: 'E-G'}
   
 ];
 
@@ -163,77 +163,87 @@ tagSelect(event:any, tag:any){
 playerSelect(event: any, team: any, player: any) {
   event.preventDefault();
   
-  this.selectedPlayer = {
-    team : team.name,
-    player : player 
-  }
-  this.onNewPlayer.emit(this.selectedPlayer);
-
   let selectedButton = document.getElementById(player.name);
-  
-      if (selectedButton?.classList.contains("active_button_right")) {
-        selectedButton.classList.remove("active_button_right");
-      }
 
-      if (selectedButton?.classList.contains("active_button")) {
+  if (selectedButton?.classList.contains("active_button_right")) {
+    selectedButton.classList.remove("active_button_right");
 
-        selectedButton.classList.remove("active_button");
-        this.previousButton = null;
+    this.selectedPlayer2 = {
+      team: "",
+      player: ""
+    };
+    this.onNewPlayer2.emit(this.selectedPlayer2); 
+  }
 
-      } else {
-        
-        if (this.previousButton) {
-          this.previousButton.classList.remove("active_button");
-        }
+  if (selectedButton?.classList.contains("active_button")) {
+    selectedButton.classList.remove("active_button");
 
-  selectedButton?.classList.add("active_button");
+    this.selectedPlayer = {
+      team: "",
+      player: ""
+    };
+    this.onNewPlayer.emit(this.selectedPlayer); 
 
-  this.previousButton = selectedButton;
+    this.previousButton = null;
+  } else {
+    
+    if (this.previousButton) {
+      this.previousButton.classList.remove("active_button");
+    }
 
-  
-  
+    selectedButton?.classList.add("active_button");
+
+    this.selectedPlayer = {
+      team: team.name,
+      player: player
+    };
+    this.onNewPlayer.emit(this.selectedPlayer);
+
+    this.previousButton = selectedButton;
+  }
 }
 
-}
 
 playerSelect2(event: any, team: any, player: any) {
   event.preventDefault();
   
-      this.selectedPlayer2 = {
-        team: team.name,
-        player: player
-      };
-
-      console.log(team , player);
-      
-  this.onNewPlayer2.emit(this.selectedPlayer2);
-
   let selectedButtonRight = document.getElementById(player.name);
 
-          if (selectedButtonRight?.classList.contains("active_button")) {
-            return;
-          }
+  if (selectedButtonRight?.classList.contains("active_button")) {
+    return; 
+  }
 
-          if (selectedButtonRight?.classList.contains("active_button_right")) {
+  if (selectedButtonRight?.classList.contains("active_button_right")) {
+    selectedButtonRight.classList.remove("active_button_right");
+    
+    this.selectedPlayer2 = {
+      team: "",
+      player: ""
+    };
+    this.onNewPlayer2.emit(this.selectedPlayer2);
 
-            selectedButtonRight.classList.remove("active_button_right");
-            this.previousButtonRight = null;
+    this.previousButtonRight = null;
+  } else {
+    
+    if (this.previousButtonRight) {
+      this.previousButtonRight.classList.remove("active_button_right");
+    }
 
-          } else {
-            
-            if (this.previousButtonRight) {
-              this.previousButtonRight.classList.remove("active_button_right");
-            }
-
+   
     selectedButtonRight?.classList.add("active_button_right");
 
+  
+    this.selectedPlayer2 = {
+      team: team.name,
+      player: player
+    };
+
+    this.onNewPlayer2.emit(this.selectedPlayer2);
 
     this.previousButtonRight = selectedButtonRight;
   }
-
-  
-  
 }
+
 
   
 

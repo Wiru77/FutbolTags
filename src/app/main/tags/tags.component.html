@@ -10,29 +10,38 @@
 <body>
 
 
-  <div class="container">
-    <div *ngFor="let team of teams" class="column" id="teams">
+    <div class="container">
+      <!-- Teams Section -->
+      <div class="teams-container">
+        <div *ngFor="let team of teams" class="column" id="teams">
+          <input *ngIf="editMode" [(ngModel)]="team.name" />
+          <button *ngIf="!editMode">{{team.name}}</button>
       
-      <input *ngIf="editMode" [(ngModel)]="team.name" />
-      <button *ngIf="!editMode">{{team.name}}</button>
+          <!-- Players Section -->
+          <div class="players-container">
+            <div *ngFor="let player of team.players" class="player-item">
+              <input *ngIf="editMode" [(ngModel)]="player.name" />
+              <button *ngIf="!editMode" [id]="player.name"
+                (click)="playerSelect($event, team, player)" 
+                (contextmenu)="playerSelect2($event, team, player)">
+                {{player.name}}
+              </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <div *ngFor="let player of team.players" class="columnPlayers" >
-        <input *ngIf="editMode" [(ngModel)]="player.name" />
-          <button *ngIf="!editMode" [id]="player.name"
-          (click)="playerSelect($event, team, player)" 
-          (contextmenu)="playerSelect2($event, team, player)">{{player.name}}</button>
+
+      <!--Tags Section-->
+      <div class="tag-container" id="tagsColumn">
+        <div *ngFor="let tag of tags" class="tag-item">
+          <input *ngIf="editMode" [(ngModel)]="tag.label" />
+          <button *ngIf="!editMode" [id]="tag.label" (click)="tagSelect($event,tag)">{{tag.label}}</button>
+        </div>
       </div>
+
       
     </div>
-  
-    <div class="column" id="tagsColumn">
-      <h3>Tags</h3>
-      <div *ngFor="let tag of tags">
-        <input *ngIf="editMode" [(ngModel)]="tag.label" />
-        <button *ngIf="!editMode" [id]="tag.label" (click)="tagSelect($event,tag)">{{tag.label}}</button>
-      </div>
-    </div>
-  </div>
   
   <div class="buttons">
     <button id="editTag" (click)="toggleEditMode()">{{editMode ? 'Save' : 'Edit'}}</button>

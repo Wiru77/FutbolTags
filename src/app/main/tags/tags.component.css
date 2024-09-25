@@ -20,7 +20,10 @@ body {
   text-align: center;
 }
 
-.column button, .column input {
+
+
+
+.column button, .column input, .tag-container button, .tag-container input {
   background-color: #4CAF50; /* Mismo color de fondo para los botones y los inputs */
   color: white; /* Color del texto */
   border: none; /* Sin bordes */
@@ -35,7 +38,7 @@ body {
   transition: background-color 0.3s; /* Transición suave en el color de fondo */
 }
 
-.column button:hover, .column input:hover {
+.column button:hover, .column input:hover, .tag-container button:hover, .tag-container input:hover {
   background-color: #1f7e26; /* Color más oscuro al pasar el mouse */
 }
 
@@ -48,8 +51,8 @@ body {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
-  margin-right: 450px;
-  margin-left: 870px;
+  margin-right: 850px;
+  margin-left: 970px;
 }
 
 #editTag, #addTag {
@@ -67,7 +70,7 @@ body {
 /* Diseño de los tags */
 #tagsColumn {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Tres columnas */
+  grid-template-columns: repeat(2, 1fr); /* Tres columnas */
   gap: 10px; /* Espacio entre los botones/inputs */
   width: 1000px;
 }
@@ -83,5 +86,42 @@ body {
 
 .active_button {
   background-color: rgb(9, 72, 124) !important;
+}
+
+
+.tag-container {
+  display: flex;
+  flex-wrap: wrap; /* Para que los botones se dividan en varias filas */
+  max-height: 400px; /* Altura máxima antes de que aparezca el scroll */
+  overflow-y: auto; /* Scroll cuando sea necesario */
+  width: 250px !important; /* Ajusta el ancho del contenedor */
+  border: 1px solid #ccc; /* Borde opcional */
+  padding: 10px; /* Espacio dentro del contenedor */
+  margin-right: 200px;
+}
+
+.tag-item {
+  flex: 0 0 48%; /* Cada tag ocupa el 48% del ancho del contenedor (para que quepan dos por fila) */
+  margin: 5px 1%; /* Espaciado entre los tags */
+  text-align: center;
+}
+
+.teams-container {
+  display: flex;
+  flex-wrap: wrap;
+  height: 400px; /* Ajusta según sea necesario */
+  overflow-y: scroll; /* Scroll vertical */
+  width: 450px; /* Ajusta el ancho según tus necesidades */
+  border: 1px solid #ccc; /* Borde opcional */
+  padding: 10px; /* Espacio dentro del contenedor */
+}
+
+.player-item {
+  flex: 1 1 45%; /* Dos columnas */
+  margin: 5px;
+}
+
+#teams button { 
+  width: 100px;
 }
 
