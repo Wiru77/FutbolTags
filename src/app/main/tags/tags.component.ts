@@ -64,75 +64,76 @@ public tags:any[] = [
   
 ];
 
-public teams:any[] = [
+public team1:any = [{team:'Home'}]
 
-    { 
-      name:'Home', 
-      players:[
-    {name:'H1', posicion:'', number:'1'},
-    {name:'H2', posicion:'', number:'1'},
-    {name:'H3', posicion:'', number:'1'},
-    {name:'H4', posicion:'', number:'1'},
-    {name:'H5', posicion:'', number:'1'},
-    {name:'H6', posicion:'', number:'1'},
-    {name:'H7', posicion:'', number:'1'},
-    {name:'H8', posicion:'', number:'1'},
-    {name:'H9', posicion:'', number:'1'},
-    {name:'H10', posicion:'', number:''},
-    {name:'H11', posicion:'', number:''},
-      ]
-    },
-    { 
-      name:'Away', 
-      players:[
-    {name:'A1', position:'', number:''},
-    {name:'A2', position:'', number:''},
-    {name:'A3', position:'', number:''},
-    {name:'A4', position:'', number:''},
-    {name:'A5', position:'', number:''},
-    {name:'A6', position:'', number:''},
-    {name:'A7', position:'', number:''},
-    {name:'A8', position:'', number:''},
-    {name:'A9', position:'', number:''},
-    {name:'A10', position:'', number:''},
-    {name:'A11', position:'', number:''},
-      ]
-    },
-  
-
-];
-
-onFileChange(event: any) {
-  const target: DataTransfer = <DataTransfer>(event.target);
-  if (target.files.length !== 1) {
-    throw new Error('Cannot use multiple files');
-  }
-
-  const reader: FileReader = new FileReader();
-  reader.onload = (e: any) => {
-    const binaryData: string = e.target.result;
-    const workbook: XLSX.WorkBook = XLSX.read(binaryData, { type: 'binary' });
-
-    const sheetName: string = workbook.SheetNames[0];
-    const sheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
-
-    // Convertir la hoja de cálculo a un array de objetos JSON
-    let data = XLSX.utils.sheet_to_json(sheet);
-
-    // Convertir las claves a minúsculas
-    this.tags = data.map((row: any) => {
-      const newRow: any = {};
-      Object.keys(row).forEach(key => {
-        newRow[key.toLowerCase()] = row[key];  // Convertir la clave a minúsculas
-      });
-      return newRow;
-    });
-
+public team2:any = [{team: 'Away'}]
     
-  };
 
-  reader.readAsBinaryString(target.files[0]);
+onTagsFileChange(event: any) {
+  this.onFileChange(event).then((keys: any) => {
+    this.tags = keys;
+  }).catch((error: any) => {
+    console.error('Error reading file', error);
+  });
 }
+
+onTeam1FileChange(event: any) {
+  this.onFileChange(event).then((keys: any) => {
+    this.team1 = keys;
+    console.log(this.team1);
+    
+  }).catch((error: any) => {
+    console.error('Error reading file', error);
+  });
+}
+
+onTeam2FileChange(event: any) {
+  this.onFileChange(event).then((keys: any) => {
+    this.team2 = keys;
+  }).catch((error: any) => {
+    console.error('Error reading file', error);
+  });
+}
+
+onFileChange(event: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const target: DataTransfer = <DataTransfer>(event.target);
+    if (target.files.length !== 1) {
+      return reject('Cannot use multiple files');
+    }
+
+    const reader: FileReader = new FileReader();
+    reader.onload = (e: any) => {
+      const binaryData: string = e.target.result;
+      const workbook: XLSX.WorkBook = XLSX.read(binaryData, { type: 'binary' });
+
+      const sheetName: string = workbook.SheetNames[0];
+      const sheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
+
+      // Convertir la hoja de cálculo a un array de objetos JSON
+      let data = XLSX.utils.sheet_to_json(sheet);
+
+      // Convertir las claves a minúsculas
+      const keys = data.map((row: any) => {
+        const newRow: any = {};
+        Object.keys(row).forEach(key => {
+          newRow[key.toLowerCase()] = row[key];  // Convertir la clave a minúsculas
+        });
+        return newRow;
+      });
+
+      resolve(keys);
+    };
+
+    reader.onerror = (error) => {
+      reject(error);
+    };
+
+    reader.readAsBinaryString(target.files[0]);
+  });
+}
+
+
 
 
 
@@ -160,10 +161,12 @@ tagSelect(event:any, tag:any){
   
 }
 
-playerSelect(event: any, team: any, player: any) {
+playerSelect(event: any, team: any, player: any , i: any) {
+  console.log(team);
+  
   event.preventDefault();
   
-  let selectedButton = document.getElementById(player.name);
+  let selectedButton = document.getElementById(team + i);
 
   if (selectedButton?.classList.contains("active_button_right")) {
     selectedButton.classList.remove("active_button_right");
@@ -194,7 +197,7 @@ playerSelect(event: any, team: any, player: any) {
     selectedButton?.classList.add("active_button");
 
     this.selectedPlayer = {
-      team: team.name,
+      team: team,
       player: player
     };
     this.onNewPlayer.emit(this.selectedPlayer);
@@ -204,10 +207,10 @@ playerSelect(event: any, team: any, player: any) {
 }
 
 
-playerSelect2(event: any, team: any, player: any) {
+playerSelect2(event: any, team: any, player: any , i :any) {
   event.preventDefault();
   
-  let selectedButtonRight = document.getElementById(player.name);
+  let selectedButtonRight = document.getElementById(team + i);
 
   if (selectedButtonRight?.classList.contains("active_button")) {
     return; 
@@ -234,7 +237,7 @@ playerSelect2(event: any, team: any, player: any) {
 
   
     this.selectedPlayer2 = {
-      team: team.name,
+      team: team,
       player: player
     };
 
@@ -245,7 +248,7 @@ playerSelect2(event: any, team: any, player: any) {
 }
 
 
-  
+
 
 toggleEditMode() {
     this.editMode = !this.editMode;

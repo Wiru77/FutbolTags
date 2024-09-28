@@ -4,8 +4,6 @@ body {
 
 .container {
   display: flex;
-  justify-content: space-between;
-  width: 1000px; /* Ajustamos el ancho de la caja contenedora */
   margin: 20px auto;
   gap: 20px; /* Añade un espaciado de 20px entre las columnas */
 }
@@ -94,7 +92,6 @@ body {
   flex-wrap: wrap; /* Para que los botones se dividan en varias filas */
   max-height: 400px; /* Altura máxima antes de que aparezca el scroll */
   overflow-y: auto; /* Scroll cuando sea necesario */
-  width: 250px !important; /* Ajusta el ancho del contenedor */
   border: 1px solid #ccc; /* Borde opcional */
   padding: 10px; /* Espacio dentro del contenedor */
   margin-right: 200px;
@@ -108,12 +105,12 @@ body {
 
 .teams-container {
   display: flex;
-  flex-wrap: wrap;
-  height: 400px; /* Ajusta según sea necesario */
-  overflow-y: scroll; /* Scroll vertical */
-  width: 450px; /* Ajusta el ancho según tus necesidades */
-  border: 1px solid #ccc; /* Borde opcional */
-  padding: 10px; /* Espacio dentro del contenedor */
+  height: 400px;
+  overflow-y: scroll;
+  width: 845px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  justify-content: space-around;
 }
 
 .player-item {

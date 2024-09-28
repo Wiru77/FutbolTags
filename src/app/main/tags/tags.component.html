@@ -1,30 +1,31 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tag</title>
   
-</head>
-<body>
-
-
-    <div class="container">
+  <div class="container">
       <!-- Teams Section -->
       <div class="teams-container">
-        <div *ngFor="let team of teams" class="column" id="teams">
-          <input *ngIf="editMode" [(ngModel)]="team.name" />
-          <button *ngIf="!editMode">{{team.name}}</button>
+        <div class="column">
+          <button >{{team1[0].team}}</button>
       
           <!-- Players Section -->
           <div class="players-container">
-            <div *ngFor="let player of team.players" class="player-item">
-              <input *ngIf="editMode" [(ngModel)]="player.name" />
-              <button *ngIf="!editMode" [id]="player.name"
-                (click)="playerSelect($event, team, player)" 
-                (contextmenu)="playerSelect2($event, team, player)">
-                {{player.name}}
+            <div *ngFor="let player of team1, let i = index" class="player-item">
+              <button  [id]="team1[0].team + i"
+                (click)="playerSelect($event, team1[0].team, player, i)" 
+                (contextmenu)="playerSelect2($event, team1[0].team, player, i)">
+                {{player.lastname}}
+              </button>
+              </div>
+            </div>
+          </div>
+        <div class="column">
+          <button >{{team2[0].team}}</button>
+      
+          <!-- Players Section -->
+          <div class="players-container">
+            <div *ngFor="let player of team2 , let i = index" class="player-item">
+              <button  [id]="team2[0].team + i"
+                (click)="playerSelect($event, team2[0].team, player, i)" 
+                (contextmenu)="playerSelect2($event, team2[0].team, player, i)">
+                {{player.lastname}}
               </button>
               </div>
             </div>
@@ -35,21 +36,34 @@
       <!--Tags Section-->
       <div class="tag-container" id="tagsColumn">
         <div *ngFor="let tag of tags" class="tag-item">
-          <input *ngIf="editMode" [(ngModel)]="tag.label" />
-          <button *ngIf="!editMode" [id]="tag.label" (click)="tagSelect($event,tag)">{{tag.label}}</button>
+          <button  [id]="tag.label" (click)="tagSelect($event,tag)">{{tag.name}}</button>
         </div>
       </div>
 
       
     </div>
   
-  <div class="buttons">
-    <button id="editTag" (click)="toggleEditMode()">{{editMode ? 'Save' : 'Edit'}}</button>
-    <button id="addTag" (click)="addTag()">Add Tag</button>
-  </div>
+    <!-- <div class="buttons">
+      <button id="editTag" (click)="toggleEditMode()">{{editMode ? 'Save' : 'Edit'}}</button>
+      <button id="addTag" (click)="addTag()">Add Tag</button>
+    </div> -->
 
-  <div>Carga de excel</div>
-  <input type="file" (change)="onFileChange($event)" />
+  <div class="load-section" style="display: flex;">
+    <div class="load-teams" style="display: flex;">
+      <div class="load-team1">
+        <label for="">Equipo 1</label>
+      <input type="file" (change)="onTeam1FileChange($event)" />
+      </div>
+      <div class="load-team2">
+        <label for="">Equipo 2</label>
+      <input type="file" (change)="onTeam2FileChange($event)" />
+      </div>
+    </div>
+    <div class="load-tags">
+      <label for="">Cargar Tags</label>
+      <input type="file" (change)="onTagsFileChange($event)" />
+    </div>
+  </div>
   
 
   

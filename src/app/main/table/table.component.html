@@ -1,10 +1,10 @@
 <div *ngFor="let data of dataList">
     {{data.tag}} 
-    {{data.team}} 
-    {{data.player1}}
-    {{data.player2}}
+    {{data.player1.team}} 
+    {{data.player1.player.lastname}}
+    {{data.player2.team}}
+    {{data.player2.player.lastname}}
     {{data.start}}
     {{data.end}}
+    {{data.time}}
 </div>
-
-<div>TEST</div>

@@ -29,6 +29,8 @@ export class MainComponent {
     endY: '-'
   }
 
+  time = '';
+
   onNewTag(tag:any):void{
     this.selectedTag = tag.name;
     
@@ -48,18 +50,13 @@ export class MainComponent {
   submitTag(){
     let newData = {
       tag : this.selectedTag,
-      team : this.selectedPlayer1.team,
-      player1: this.selectedPlayer1.player.name,
-      player2: this.selectedPlayer2 ? this.selectedPlayer2.player.name : '',
+      player1: this.selectedPlayer1,
+      player2: this.selectedPlayer2,
       start: `${this.coordinates.startX} , ${this.coordinates.startY}`,
-      end: `${this.coordinates.endX} , ${this.coordinates.endY}`
+      end: `${this.coordinates.endX} , ${this.coordinates.endY}`,
+      time: this.time
     }
-    
-
     this.dataList.push(newData);
-
-    console.log(this.dataList);
-    
   }
 
   onNewPlayer(player:any):void{
@@ -75,4 +72,42 @@ export class MainComponent {
     
     
   }
+
+  timeChange(event: any){
+    this.time = this.convertToTimeFormat(event.target.value)
+    
+  }
+
+   convertToTimeFormat(input: number): string {
+    // Convertir el número a una cadena
+    let inputString = input.toString();
+    
+    // Si tiene un dígito, es la hora y los minutos serán 00 (01:00, 02:00, etc.)
+    if (inputString.length === 1) {
+      return `0${inputString}:00`;
+    }
+    
+    // Si tiene dos dígitos, son las horas (XX:00)
+    if (inputString.length === 2) {
+      return `${inputString.padStart(2, '0')}:00`;
+    }
+    
+    // Si tiene tres dígitos, los primeros dos son las horas y el último los minutos (XX:0X)
+    if (inputString.length === 3) {
+      const hours = inputString.slice(0, 2);
+      const minutes = inputString.slice(2).padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
+    
+    // Si tiene cuatro o más dígitos, los últimos dos son los minutos y el resto las horas (XXXX:XX)
+    if (inputString.length >= 4) {
+      const minutes = inputString.slice(-2);
+      const hours = inputString.slice(0, -2).padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
+  
+    // Devolver un valor por defecto si ocurre algo inesperado
+    return '00:00';
+  }
+  
 }

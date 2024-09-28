@@ -1,6 +1,9 @@
-<app-goal></app-goal>
-<app-field (clickCoordinates)="onCoordinatesReceived($event)"></app-field>
-<app-table [dataList]="dataList"></app-table>
+<div style="display: flex;">
+    <app-field (clickCoordinates)="onCoordinatesReceived($event)"></app-field>
+    <app-table [dataList]="dataList"></app-table>
+</div>
+<label for=""></label>
+  <input type="text" maxlength="4" pattern="[0-5][0-9]:[0-5][0-9]" placeholder="MM:SS" (keyup)="timeChange($event)">
 <app-tags (onNewTag)="onNewTag($event)"
           (onNewPlayer)="onNewPlayer($event)"
           (onNewPlayer2)="onNewPlayer2($event)">
