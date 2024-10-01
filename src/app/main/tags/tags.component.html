@@ -1,13 +1,21 @@
   
   <div class="container">
+
+    <div>
+      <input type="text" [(ngModel)]="filterTagText" (keyup)="filterTags()"  placeholder="Buscar tag...">
+      <input type="text" [(ngModel)]="filterPlayerText" (keyup)="filterPlayers()" placeholder="Buscar jugador...">
+    </div>
+
       <!-- Teams Section -->
       <div class="teams-container">
         <div class="column">
+          
+          <button>Editable</button>
           <button >{{team1[0].team}}</button>
-      
+
           <!-- Players Section -->
           <div class="players-container">
-            <div *ngFor="let player of team1, let i = index" class="player-item">
+            <div *ngFor="let player of filteredTeam1, let i = index" class="player-item">
               <button  [id]="team1[0].team + i"
                 (click)="playerSelect($event, team1[0].team, player, i)" 
                 (contextmenu)="playerSelect2($event, team1[0].team, player, i)">
@@ -17,11 +25,12 @@
             </div>
           </div>
         <div class="column">
+          <button>Editable2</button>
           <button >{{team2[0].team}}</button>
       
           <!-- Players Section -->
           <div class="players-container">
-            <div *ngFor="let player of team2 , let i = index" class="player-item">
+            <div *ngFor="let player of filteredTeam2, let i = index" class="player-item">
               <button  [id]="team2[0].team + i"
                 (click)="playerSelect($event, team2[0].team, player, i)" 
                 (contextmenu)="playerSelect2($event, team2[0].team, player, i)">
@@ -35,7 +44,7 @@
 
       <!--Tags Section-->
       <div class="tag-container" id="tagsColumn">
-        <div *ngFor="let tag of tags" class="tag-item">
+        <div *ngFor="let tag of filteredTags" class="tag-item">
           <button  [id]="tag.label" (click)="tagSelect($event,tag)">{{tag.name}}</button>
         </div>
       </div>

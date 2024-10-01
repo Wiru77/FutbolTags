@@ -20,6 +20,14 @@ export class TagsComponent {
 @Output() public onNewPlayer2: EventEmitter<any> = new EventEmitter();
 
 data: any[] = [];
+
+
+public filterTagText: string = ''; 
+public filteredTags: any[] = []; 
+public filterPlayerText: string = '';  
+public filteredTeam1: any[] = [];  
+public filteredTeam2: any[] = []; 
+
 public previousButton: any = null;
 public previousButtonRight: any = null;
 public previousButtonTag: any = null;
@@ -67,7 +75,15 @@ public tags:any[] = [
 public team1:any = [{team:'Home'}]
 
 public team2:any = [{team: 'Away'}]
-    
+
+
+constructor() {
+
+  this.filteredTags = [...this.tags];
+  this.filteredTeam1 = [...this.team1];
+  this.filteredTeam2 = [...this.team2];
+
+}
 
 onTagsFileChange(event: any) {
   this.onFileChange(event).then((keys: any) => {
@@ -80,6 +96,7 @@ onTagsFileChange(event: any) {
 onTeam1FileChange(event: any) {
   this.onFileChange(event).then((keys: any) => {
     this.team1 = keys;
+    this.filteredTeam1 = [...this.team1];
     console.log(this.team1);
     
   }).catch((error: any) => {
@@ -90,6 +107,7 @@ onTeam1FileChange(event: any) {
 onTeam2FileChange(event: any) {
   this.onFileChange(event).then((keys: any) => {
     this.team2 = keys;
+    this.filteredTeam2 = [...this.team2];
   }).catch((error: any) => {
     console.error('Error reading file', error);
   });
@@ -154,12 +172,20 @@ tagSelect(event:any, tag:any){
   
   selectedButtonTag?.classList.add("active_button_tag");
 
-  this.previousButtonTag = selectedButtonTag;
-
-  
-  
+  this.previousButtonTag = selectedButtonTag; 
   
 }
+
+
+filterTags() {
+  const filterTextLower = this.filterTagText.toLowerCase();
+
+  
+  this.filteredTags = this.tags.filter(tag =>
+    tag.name.toLowerCase().includes(filterTextLower)
+  );
+}
+
 
 playerSelect(event: any, team: any, player: any , i: any) {
   console.log(team);
@@ -247,6 +273,20 @@ playerSelect2(event: any, team: any, player: any , i :any) {
   }
 }
 
+
+filterPlayers() {
+  const filterTextLower = this.filterPlayerText.toLowerCase();
+
+  
+  this.filteredTeam1 = this.team1.filter((player: { lastname: string })=>
+    player.lastname.toLowerCase().includes(filterTextLower)
+  );
+
+  
+  this.filteredTeam2 = this.team2.filter((player: { lastname: string }) =>
+    player.lastname.toLowerCase().includes(filterTextLower)
+  );
+}
 
 
 
