@@ -10,7 +10,10 @@
       <div class="teams-container">
         <div class="column">
           
-          <button>Editable</button>
+          <!-- Team1 -->
+         
+        
+          <button class="jornada_button">Jornada</button>
           <button >{{team1[0].team}}</button>
 
           <!-- Players Section -->
@@ -25,10 +28,13 @@
             </div>
           </div>
         <div class="column">
-          <button>Editable2</button>
+          
+          <!-- Team2 -->
+          <input type="text" placeholder="1">
+
           <button >{{team2[0].team}}</button>
       
-          <!-- Players Section -->
+          <!-- Players Section 2 -->
           <div class="players-container">
             <div *ngFor="let player of filteredTeam2, let i = index" class="player-item">
               <button  [id]="team2[0].team + i"

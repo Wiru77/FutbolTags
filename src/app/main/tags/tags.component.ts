@@ -21,7 +21,6 @@ export class TagsComponent {
 
 data: any[] = [];
 
-
 public filterTagText: string = ''; 
 public filteredTags: any[] = []; 
 public filterPlayerText: string = '';  
@@ -75,6 +74,7 @@ public tags:any[] = [
 public team1:any = [{team:'Home'}]
 
 public team2:any = [{team: 'Away'}]
+
 
 
 constructor() {
@@ -173,6 +173,9 @@ tagSelect(event:any, tag:any){
   selectedButtonTag?.classList.add("active_button_tag");
 
   this.previousButtonTag = selectedButtonTag; 
+
+  this.filterTagText = '';
+  this.filteredTags = [...this.tags];
   
 }
 
@@ -199,7 +202,7 @@ playerSelect(event: any, team: any, player: any , i: any) {
 
     this.selectedPlayer2 = {
       team: "",
-      player: ""
+      player: ""  
     };
     this.onNewPlayer2.emit(this.selectedPlayer2); 
   }
@@ -230,6 +233,10 @@ playerSelect(event: any, team: any, player: any , i: any) {
 
     this.previousButton = selectedButton;
   }
+
+  this.filterPlayerText = '';  
+  this.filteredTeam1 = [...this.team1];  
+  this.filteredTeam2 = [...this.team2]; 
 }
 
 
@@ -271,6 +278,10 @@ playerSelect2(event: any, team: any, player: any , i :any) {
 
     this.previousButtonRight = selectedButtonRight;
   }
+
+  this.filterPlayerText = '';  
+  this.filteredTeam1 = [...this.team1];  
+  this.filteredTeam2 = [...this.team2]; 
 }
 
 
@@ -299,7 +310,6 @@ addTag() {
   this.tags.push({ name: 'Nuevo Tag', label: 'Nuevo', type: '1' });
 
 }
-
 
 
 

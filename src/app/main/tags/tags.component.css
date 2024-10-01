@@ -19,8 +19,6 @@ body {
 }
 
 
-
-
 .column button, .column input, .tag-container button, .tag-container input {
   background-color: #4CAF50; /* Mismo color de fondo para los botones y los inputs */
   color: white; /* Color del texto */
