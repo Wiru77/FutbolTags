@@ -1,0 +1,4 @@
+.card {
+  max-width: 1300px; /* Establece un ancho máximo */
+  margin: 0 auto; /* Centra el contenido dentro del card */
+}

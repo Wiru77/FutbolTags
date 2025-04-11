@@ -1,0 +1,102 @@
+<div>
+  <button tabindex="-1" (click)="resetTable()">Restablecer tabla</button>
+  <button tabindex="-1" (click)="exportTable()">Exportar Tabla</button>
+</div>
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <!--<th>Localia</th> 
+        <th>Jornada</th>
+        <th>Rival</th>
+        <th>Jornada</th>
+        <th>Torneo</th>
+        -->
+
+        <th>Equipo</th>
+        <th>Jugador</th>
+        <th>Evento</th>
+        <th>Receptor</th>
+
+        <th>Tiempo</th>
+        <th>Dirección</th>
+        <th>X</th>
+        <th>Y</th>
+        <th>X2</th>
+        <th>Y2</th>
+        <th>PX</th>
+        <th>PY</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of dataList; let i = index">
+        <!-- <td>{{ data.localia }}</td>
+         <td>{{ data.jornada }}</td>
+        <td>{{ data.torneo }}</td>
+        <td>{{ data.rival }}</td> -->
+
+        <td>{{ nombreEquipo }}</td>
+        <td>{{ data.jugador1.jugador?.nombre || "" }}</td>
+        <td>{{ data.tag?.nombre || "-" }}</td>
+        <td>{{ data.jugador2.jugador?.nombre || "" }}</td>
+        <td>{{ data.time }}</td>
+        <td>{{ data.tag?.tendencia === true ? data.direccion : "" }}</td>
+        <td>{{ data.startX }}</td>
+        <td>{{ data.startY }}</td>
+        <td>{{ data.endX }}</td>
+        <td>{{ data.endY }}</td>
+        <td>{{ data.porteriaX }}</td>
+        <td>{{ data.porteriaY }}</td>
+        <td><span (click)="removeRow(i)" class="delete-btn">X</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Botón para abrir el modal -->
+<button
+  class="btn btn-primary"
+  data-bs-toggle="modal"
+  data-bs-target="#guardarStats"
+>
+  Guardar
+</button>
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="guardarStats" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Guardado de Estadísticas</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="fs-sm">¿Guardar estadísticas?</p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          data-bs-dismiss="modal"
+        >
+          Cancelar
+        </button>
+        <!-- Botón que ejecuta la función guardarStats -->
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="guardarStats()"
+          data-bs-dismiss="modal"
+        >
+          Sí, Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

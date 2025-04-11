@@ -1,0 +1,390 @@
+<app-nav></app-nav>
+<div class="container mt-4">
+  <div class="header">
+    <h1>Estadísticas de {{ teamName }}</h1>
+  </div>
+  <p>Este módulo lista todas las estadísticas</p>
+
+  <div class="filtro-container">
+    <div class="form-group">
+      <label for="localia" class="bold-label">Localía</label>
+      <select
+        id="localia"
+        class="form-control"
+        [(ngModel)]="selectedLocalia"
+        (change)="filterStats()"
+      >
+        <option value="">Todos</option>
+        <option *ngFor="let localia of localias" [value]="localia">
+          {{ localia }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="torneo" class="bold-label">Torneo</label>
+      <select
+        id="torneo"
+        class="form-control"
+        [(ngModel)]="selectedTorneo"
+        (change)="filterStats()"
+      >
+        <option value="">Todos</option>
+        <option *ngFor="let torneo of extractTorneos()" [value]="torneo">
+          {{ torneo }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="jornada" class="bold-label">Jornada</label>
+      <select
+        id="jornada"
+        class="form-control"
+        [(ngModel)]="selectedJornada"
+        (change)="filterStats()"
+      >
+        <option value="">Todos</option>
+        <option *ngFor="let jornada of jornadas" [value]="jornada">
+          {{ jornada }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="equipo" class="bold-label">Jugadores</label>
+      <select
+        id="jugador"
+        class="form-control"
+        [(ngModel)]="selectedPlayer"
+        (change)="filterStats()"
+      >
+        <option value="">Todos</option>
+        <option *ngFor="let jugador of jugadores" [value]="jugador.nombre">
+          {{ jugador.nombre }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="tag" class="bold-label">Eventos</label>
+      <select
+        id="tag"
+        class="form-control"
+        [(ngModel)]="selectedTag"
+        (change)="filterStats()"
+      >
+        <option value="">Todos</option>
+        <option *ngFor="let tag of getTags()" [value]="tag.nombre">
+          {{ tag.nombre }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="jugador2" class="bold-label">Receptores</label>
+      <select
+        id="jugador2"
+        class="form-control"
+        [(ngModel)]="selectedPlayer2"
+        (change)="filterStats()"
+      >
+        <option value="">Todos</option>
+        <option *ngFor="let receptor of receptores" [value]="receptor.nombre">
+          {{ receptor.nombre }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="rival" class="bold-label">Rival</label>
+      <select
+        id="rival"
+        class="form-control"
+        [(ngModel)]="selectedRival"
+        (change)="filterStats()"
+      >
+        <option value="">Todos</option>
+        <option *ngFor="let rival of rivales" [value]="rival">
+          {{ rival }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="tiempo" class="bold-label">Tiempo</label>
+      <select
+        id="tiempo"
+        class="form-control"
+        [(ngModel)]="selectedTime"
+        (change)="filterStats()"
+      >
+        <option value="">Todos</option>
+        <option value="0-5">00:00 - 05:00</option>
+        <option value="5-10">05:01 - 10:00</option>
+        <option value="10-15">10:01 - 15:00</option>
+        <option value="15-20">15:01 - 20:00</option>
+        <option value="20-25">20:01 - 25:00</option>
+        <option value="25-30">25:01 - 30:00</option>
+        <option value="30-35">30:01 - 35:00</option>
+        <option value="35-40">35:01 - 40:00</option>
+        <option value="40-45">40:01 - 45:00</option>
+        <option value="45-50">45:01 - 50:00</option>
+        <option value="50-55">50:01 - 55:00</option>
+        <option value="55-60">55:01 - 60:00</option>
+        <option value="60-65">60:01 - 65:00</option>
+        <option value="65-70">65:01 - 70:00</option>
+        <option value="70-75">70:01 - 75:00</option>
+        <option value="75-80">75:01 - 80:00</option>
+        <option value="80-85">80:01 - 85:00</option>
+        <option value="85-90">85:01 - 90:00</option>
+        <option value="90+">90:01 o más</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="direccion" class="bold-label">Dirección</label>
+      <select
+        id="direccion"
+        class="form-control"
+        [(ngModel)]="selectedDireccion"
+        (change)="filterStats()"
+      >
+        <option value="">Todas</option>
+        <option value="Frente">Frente</option>
+        <option value="Detrás">Detrás</option>
+        <option value="Izquierda">Izquierda</option>
+        <option value="Derecha">Derecha</option>
+      </select>
+    </div>
+
+    <div class="reload-button-container">
+      <button
+        (click)="resetFilters()"
+        class="btn btn-warning ms-2"
+        style="width: 170px"
+      >
+        Reestablecer
+      </button>
+    </div>
+  </div>
+
+  <!--PESTAÑAS-->
+
+  <div class="tabs-container">
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [ngClass]="{ active: activeTab === 'tablaStats' }"
+          (click)="setActiveTab('tablaStats')"
+          >General</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [ngClass]="{ active: activeTab === 'efectividad' }"
+          (click)="setActiveTab('efectividad')"
+          >Efectividad</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [ngClass]="{ active: activeTab === 'asociaciones' }"
+          (click)="setActiveTab('asociaciones')"
+          >Asociaciones</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [ngClass]="{ active: activeTab === 'tendencias' }"
+          (click)="setActiveTab('tendencias')"
+          >Tendencias</a
+        >
+      </li>
+    </ul>
+
+    <div *ngIf="activeTab === 'tablaStats'">
+      <div class="general-container">
+        <h3>General</h3>
+        <div class="table-stats">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Torneo</th>
+                <th>Jornada</th>
+                <th>Localía</th>
+                <th>Jugador</th>
+                <th>Evento</th>
+                <th>Receptor</th>
+                <th>Rival</th>
+                <th>Tiempo</th>
+                <th>Dirección</th>
+                <th>X</th>
+                <th>Y</th>
+                <th>X2</th>
+                <th>Y2</th>
+              </tr>
+            </thead>
+            <tbody *ngFor="let item of stats">
+              <tr *ngFor="let stat of item.stats">
+                <td>{{ stat.torneo }}</td>
+                <td>{{ stat.jornada }}</td>
+                <td>{{ stat.localia }}</td>
+                <td>{{ item.jugador_nombre }}</td>
+                <td>{{ stat.evento?.nombre }}</td>
+                <td>{{ stat.receptor?.nombre }}</td>
+                <td>{{ stat.rival }}</td>
+                <td>{{ stat.tiempo }}</td>
+                <td>{{ stat.evento?.tendencia ? stat.direccion : " " }}</td>
+                <td>{{ stat.x }}</td>
+                <td>{{ stat.y }}</td>
+                <td>{{ stat.x2 }}</td>
+                <td>{{ stat.y2 }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cuadrante-select-container">
+          <label for="tipo-cuadrantes"
+            ><strong>Distribución de Cuadrantes</strong></label
+          >
+          <select
+            [(ngModel)]="selectedCuadrantes"
+            class="form-control"
+            id="cuadrante-label"
+          >
+            <option value="3x3">Cuadrantes 3x3</option>
+            <option value="3x5">Cuadrantes 3x5</option>
+          </select>
+        </div>
+
+        <div class="cuadrante3x3" *ngIf="selectedCuadrantes === '3x3'">
+          <div class="cuadrante-container">
+            <div
+              *ngFor="let stat of cuadranteStats3x3"
+              [class]="'element ' + stat.class"
+            >
+              {{ stat.porcentaje | number : "1.2-2" }}%
+            </div>
+          </div>
+        </div>
+
+        <div class="cuadrante3x5" *ngIf="selectedCuadrantes === '3x5'">
+          <div class="cuadrante-container2">
+            <div
+              *ngFor="let stat of cuadranteStats3x5"
+              [class]="'cuadrante ' + stat.class"
+            >
+              {{ stat.porcentaje | number : "1.2-2" }}%
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'efectividad'">
+      <div class="efectividad" *ngIf="showEfectividad">
+        <h3>Tabla de Efectividad de Eventos</h3>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th class="table-left">Evento</th>
+
+              <th>Aciertos</th>
+              <th>Fallos</th>
+              <th>Total</th>
+              <th>Efectividad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let stat of efectividadStats">
+              <td class="table-left">{{ stat.nombre }}</td>
+
+              <td>{{ stat.aciertos }}</td>
+              <td>{{ stat.fallos }}</td>
+              <td>{{ stat.total }}</td>
+              <td>{{ stat.efectividad }}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'asociaciones'">
+      <div class="asociaciones-container">
+        <h3 class="h3-asoc">Tabla de Asociaciones</h3>
+
+        <div class="colores">
+          <div class="azul"></div>
+          <h5>Jugadores</h5>
+          <div class="rojo"></div>
+          <h5>Receptores</h5>
+        </div>
+        <div class="asociaciones-container">
+          <table class="tabla-asociaciones" *ngIf="showAsociaciones">
+            <thead>
+              <tr>
+                <td class="jugador-receptor"></td>
+
+                <td
+                  class="td-receptor"
+                  *ngFor="let jugador of jugadoresCabeceras"
+                >
+                  {{ jugador }}
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let fila of asociacionesStats">
+                <td class="td-jugador">{{ fila.jugador }}</td>
+                <td
+                  class="td-cuadricula"
+                  *ngFor="let jugador of jugadoresCabeceras"
+                >
+                  {{ fila[jugador] || 0 }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'tendencias'">
+      <div class="direccion-container">
+        <h3>Tabla de Direcciones</h3>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Dirección</th>
+              <th>Cantidad de Eventos</th>
+              <th>Porcentaje</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let stat of direccionStats">
+              <td>{{ stat.direccion }}</td>
+              <td>{{ stat.cantidad }}</td>
+              <td>{{ stat.porcentaje | number : "1.2-2" }}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="return-button">
+    <button
+      [routerLink]="['/panel/equipos']"
+      class="btn btn-warning ms-2"
+      style="width: 170px"
+    >
+      Regresar
+    </button>
+  </div>
+</div>

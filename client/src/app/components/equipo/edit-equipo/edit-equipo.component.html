@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Actualizar Equipos</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <app-nav></app-nav>
+    <!-- Edición de equipo -->
+    <div class="container mt-4">
+      <div class="header mb-4">
+        <h1>Equipos</h1>
+        <p>Este módulo lista todos los equipos.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Actualizar equipo</h5>
+        </div>
+        <div class="card-body">
+          <form #updateForm="ngForm" (ngSubmit)="actualizar(updateForm)">
+            <div class="row g-3">
+              <!-- Campo Nombre -->
+              <div class="col-md-6">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="nombre"
+                  placeholder="Nombre del Equipo"
+                  required
+                  name="nombre"
+                  [(ngModel)]="equipo.nombre"
+                />
+              </div>
+            </div>
+
+            <!-- Campo de cargar imagen-->
+            <div class="row mt-4">
+              <div class="col-md-6 text-center">
+                <label for="imagen" class="form-label">Portada</label>
+                <div class="mb-3">
+                  <img
+                    id="preview"
+                    [src]="imgSelect"
+                    alt="Imagen del equipo"
+                    class="rounded img-thumbnail"
+                    style="width: 150px; height: 150px; object-fit: cover"
+                  />
+                </div>
+                <div class="d-flex justify-content-center">
+                  <input
+                    type="file"
+                    id="imagen"
+                    class="form-control"
+                    accept="image/*"
+                    (change)="fileChangeEvent($event)"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="mt-4 d-flex justify-content-between">
+              <button class="btn btn-primary" type="submit">
+                Actualizar equipo
+              </button>
+              <a [routerLink]="['/panel/equipos']" class="btn btn-warning"
+                >Regresar</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de jugadores asignados-->
+
+    <div class="container mt-4">
+      <div class="header mb-4">
+        <h1>Jugadores Asignados</h1>
+      </div>
+      <div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Opciones</th>
+            </tr>
+          </thead>
+          <tbody *ngFor="let jugador of asignados">
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+                  <img
+                    style="width: 50px"
+                    [src]="url + 'obtener_portada/' + jugador.portada"
+                    class="image-thumbnail rounded-0"
+                    alt="Square image"
+                  />
+                  <h6 class="ms-2 mb-0">{{ jugador.nombre }}</h6>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex justify-content-start">
+                  <!-- Botón Quitar -->
+                  <button
+                    class="btn btn-primary"
+                    (click)="abrirModal(jugador)"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmRemoveModal"
+                  >
+                    Quitar del equipo
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Lista de jugadores no asignados -->
+
+    <div class="container mt-4">
+      <div class="header mb-4">
+        <h1>Jugadores No Asignados</h1>
+      </div>
+      <div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Opciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let jugador of noasignados">
+              <td>
+                <div class="d-flex align-items-center">
+                  <img
+                    style="width: 50px"
+                    [src]="url + 'obtener_portada/' + jugador.portada"
+                    class="image-thumbnail rounded-0"
+                    alt="Square image"
+                  />
+                  <h6 class="ms-2 mb-0">{{ jugador.nombre }}</h6>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex justify-content-start">
+                  <!-- Botón Agregar -->
+                  <button
+                    class="btn btn-primary"
+                    (click)="abrirModal(jugador)"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmAddModal"
+                  >
+                    Agregar jugador a equipo
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Modal de confirmación para agregar jugador -->
+    <div
+      class="modal fade"
+      id="confirmAddModal"
+      tabindex="-1"
+      aria-labelledby="confirmAddModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmAddModalLabel">Confirmación</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            ¿Estás seguro de que deseas agregar a este jugador al equipo?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="agregar(jugadorSeleccionado)"
+              class="btn btn-warning"
+            >
+              Sí, Agregar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de confirmación para quitar jugador -->
+    <div
+      class="modal fade"
+      id="confirmRemoveModal"
+      tabindex="-1"
+      aria-labelledby="confirmRemoveModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmRemoveModalLabel">
+              Confirmación
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            ¿Estás seguro de que deseas quitar a este jugador del equipo?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              (click)="quitar(jugadorSeleccionado)"
+            >
+              Sí, Quitar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

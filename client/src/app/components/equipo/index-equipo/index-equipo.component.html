@@ -1,0 +1,153 @@
+<app-nav></app-nav>
+<div class="container mt-4">
+  <div class="header">
+    <h1>Equipos</h1>
+  </div>
+  <p>Este módulo lista todos los equipos</p>
+
+  <div class="filter-section">
+    <form class="row g-2">
+      <div class="col-md-5">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Nombre Equipo"
+          name="filtro_nombres"
+        />
+      </div>
+      <div class="col-md-5">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Id usuario"
+          name="filtro_id_usuario"
+        />
+      </div>
+    </form>
+  </div>
+  <!--Nuevo registro-->
+  <div>
+    <a class="text-nowrap" [routerLink]="['/panel/equipos/registro']"
+      >Registrar nuevo equipo</a
+    >
+  </div>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Nombre del Equipo</th>
+      </tr>
+    </thead>
+    <tbody *ngFor="let equipo of equipos; let indice = index">
+      <tr>
+        <td>{{ indice + 1 }}</td>
+        <td>
+          <h6 style="padding-bottom: 0; margin-bottom: 0">
+            <img
+              style="width: 50px"
+              [src]="url + 'obtener_portada_equipo/' + equipo.portada"
+              class="image-thumbnail rounded-0"
+              alt="Square image"
+            />
+            {{ equipo.nombre }}
+          </h6>
+        </td>
+        <td>
+          <!--Contenedor Dropdown-->
+          <div class="container mt-4" class="text-center align-middle">
+            <div class="dropdown">
+              <button
+                class="btn btn-primary dropdown-toggle"
+                type="button"
+                id="dropdownMenuButton"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Seleccionar Opción
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li>
+                  <a
+                    class="dropdown-item"
+                    [routerLink]="['/panel/equipos', equipo._id]"
+                    >Editar Equipo</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    style="cursor: pointer"
+                    data-bs-toggle="modal"
+                    [attr.data-bs-target]="'#delete-' + equipo._id"
+                    >Eliminar Equipo</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    [routerLink]="['/panel/equipos/stats', equipo._id]"
+                  >
+                    Estadísticas</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- Modal markup -->
+          <div
+            class="modal fade"
+            id="delete-{{ equipo._id }}"
+            tabindex="-1"
+            role="dialog"
+          >
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Eliminar, {{ equipo.nombre }}</h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <p class="fs-sm">¿Eliminar este equipo?</p>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    data-bs-dismiss="modal"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    (click)="eliminar(equipo._id)"
+                  >
+                    Sí, Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <nav>
+    <ul class="pagination justify-content-end">
+      <li class="page-item disabled">
+        <a class="page-link" href="#">Prev</a>
+      </li>
+      <li class="page-item active"><a class="page-link" href="#">1</a></li>
+      <li class="page-item"><a class="page-link" href="#">2</a></li>
+      <li class="page-item"><a class="page-link" href="#">3</a></li>
+      <li class="page-item"><a class="page-link" href="#">Next</a></li>
+    </ul>
+  </nav>
+</div>

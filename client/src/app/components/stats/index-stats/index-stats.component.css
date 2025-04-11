@@ -1,0 +1,32 @@
+#recuadro-angulos {
+  width: 300px;
+  height: 200px;
+  border: 1px solid black;
+  position: relative;
+  margin-top: 20px;
+}
+
+#flecha1,
+#flecha2 {
+  width: 50px;
+  height: 10px;
+  background-color: red;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: left center;
+}
+
+#flecha2 {
+  background-color: blue;
+}
+
+#angulos {
+  text-align: center;
+  margin-top: 10px;
+}
+
+#arriba,
+#abajo {
+  margin: 5px;
+}

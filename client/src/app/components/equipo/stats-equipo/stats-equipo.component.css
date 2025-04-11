@@ -1,0 +1,307 @@
+.bold-label {
+  font-weight: bold;
+}
+
+.filtro-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: 15px;
+  margin-top: 50px;
+}
+
+.filtro-container .form-group {
+  flex: 1 1 200px; /* Los elementos tomarán un 100% del ancho de su contenedor, pero se ajustarán si es necesario */
+}
+
+.filtro-container select {
+  width: 100%; /* Hace que los select se adapten al contenedor */
+}
+
+.reload-button-container {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.tabs-container {
+  margin-top: 60px;
+}
+
+.nav-tabs .nav-link {
+  cursor: pointer;
+}
+
+.nav-tabs .nav-link.active {
+  font-weight: bold;
+  background-color: #3f65ff;
+  color: rgb(255, 255, 255);
+}
+
+.return-button {
+  display: flex;
+  flex-direction: column;
+  padding-left: 18%;
+  display: flex;
+  justify-content: center; /* Centrar el botón */
+  margin-left: -18%; /* Eliminar margen negativo */
+  width: auto; /* Ajustar al contenido */
+}
+
+.table-stats {
+  margin-top: 50px;
+}
+
+#showEfectividad {
+  margin-top: 10px;
+  margin-left: 7px;
+  width: 170px;
+}
+
+.efectividad {
+  margin-top: 50px;
+}
+
+.h3-asoc {
+  margin-top: 30px;
+}
+
+.asociaciones-container {
+  display: grid;
+  margin-bottom: 20px;
+}
+
+.general-container {
+  margin-top: 30px;
+}
+
+.td-cuadricula {
+  border: 1px solid black;
+  padding: 8px;
+  text-align: center;
+  min-width: 30px;
+}
+
+.td-jugador {
+  width: 17%;
+  font-weight: bold;
+  background-color: rgba(10, 47, 255, 0.651);
+  color: #f0f0f0;
+}
+
+.td-receptor {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  transform-origin: center;
+  text-align: left;
+  font-weight: bold;
+  background-color: rgba(255, 10, 10, 0.644);
+  color: #f0f0f0;
+}
+
+.jugador-receptor {
+  background: linear-gradient(
+    to bottom left,
+    rgba(255, 10, 10, 0.692),
+    rgba(10, 47, 255, 0.671)
+  );
+}
+
+.colores {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+h5 {
+  font-weight: bold;
+}
+
+.azul {
+  background-color: rgba(10, 47, 255, 0.671);
+  width: 20px;
+  height: 20px;
+  margin-bottom: 5px;
+}
+
+.rojo {
+  background-color: rgba(255, 10, 10, 0.692);
+  width: 20px;
+  height: 20px;
+  margin-bottom: 5px;
+}
+
+th {
+  background-color: #f0f0f0;
+}
+
+.cuadrantes {
+  margin-top: 50px;
+}
+
+td,
+th {
+  text-align: center;
+}
+
+.table-left {
+  text-align: justify;
+}
+
+.cuadrante-container {
+  margin: 40px;
+  width: 1100px;
+  height: 500px;
+  outline: 4px solid;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.cuadrante-container2 {
+  margin: 40px;
+  width: 1100px;
+  height: 500px;
+  outline: 4px solid;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+}
+
+.element {
+  color: #fff;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.cuadrante {
+  color: #fff;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.cuadrante-title {
+  margin-top: 50px;
+}
+
+.cuadrante-select-container {
+  margin-top: 35px;
+  margin-left: 3%;
+}
+
+#cuadrante-label {
+  width: 200px;
+}
+
+.element-porcentaje-1 {
+  background-color: rgb(14, 252, 6);
+}
+
+.element-porcentaje-2 {
+  background-color: rgba(14, 252, 6, 0.822);
+}
+
+.element-porcentaje-3 {
+  background-color: rgba(14, 252, 6, 0.616);
+}
+
+.element-porcentaje-4 {
+  background-color: rgba(14, 252, 6, 0.493);
+}
+
+.element-porcentaje-5 {
+  background-color: rgba(14, 252, 6, 0.342);
+}
+
+.element-porcentaje-6 {
+  background-color: rgba(255, 0, 0, 0.404);
+}
+
+.element-porcentaje-7 {
+  background-color: rgba(255, 0, 0, 0.514);
+}
+
+.element-porcentaje-8 {
+  background-color: rgba(255, 0, 0, 0.781);
+}
+
+.element-porcentaje-9 {
+  background-color: rgba(255, 0, 0, 0.952);
+}
+
+.cuadrante-porcentaje-1 {
+  background-color: rgb(14, 252, 6);
+}
+
+.cuadrante-porcentaje-2 {
+  background-color: rgba(14, 252, 6, 0.884);
+}
+
+.cuadrante-porcentaje-3 {
+  background-color: rgba(14, 252, 6, 0.616);
+}
+
+.cuadrante-porcentaje-4 {
+  background-color: rgba(14, 252, 6, 0.774);
+}
+
+.cuadrante-porcentaje-5 {
+  background-color: rgba(14, 252, 6, 0.616);
+}
+
+.cuadrante-porcentaje-6 {
+  background-color: rgba(14, 252, 6, 0.486);
+}
+
+.cuadrante-porcentaje-7 {
+  background-color: rgba(14, 252, 6, 0.418);
+}
+
+.cuadrante-porcentaje-8 {
+  background-color: rgba(14, 252, 6, 0.322);
+}
+
+.cuadrante-porcentaje-9 {
+  background-color: rgba(255, 0, 0, 0.24);
+}
+
+.cuadrante-porcentaje-10 {
+  background-color: rgba(255, 0, 0, 0.445);
+}
+
+.cuadrante-porcentaje-11 {
+  background-color: rgba(255, 0, 0, 0.568);
+}
+
+.cuadrante-porcentaje-12 {
+  background-color: rgba(255, 0, 0, 0.603);
+}
+
+.cuadrante-porcentaje-13 {
+  background-color: rgba(255, 0, 0, 0.719);
+}
+
+.cuadrante-porcentaje-14 {
+  background-color: rgba(255, 0, 0, 0.856);
+}
+
+.cuadrante-porcentaje-15 {
+  background-color: rgb(255, 0, 0);
+}
+
+.direccion-container {
+  margin-top: 50px;
+}

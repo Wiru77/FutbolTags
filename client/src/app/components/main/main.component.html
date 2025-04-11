@@ -1,0 +1,137 @@
+<!-- Modal para ingresar datos iniciales -->
+
+<div
+  class="modal fade show d-block"
+  id="initModal"
+  tabindex="-1"
+  role="dialog"
+  *ngIf="!datosIngresados"
+>
+  <app-nav></app-nav>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Datos Iniciales</h5>
+      </div>
+      <div class="modal-body">
+        <label for="equipo" class="label"><strong>Equipo</strong></label>
+        <select
+          id="equipo"
+          class="form-control"
+          (change)="selectTeamModal($event)"
+        >
+          <option value="">Seleccione un equipo</option>
+          <option *ngFor="let equipo of equipos" [value]="equipo._id">
+            {{ equipo.nombre }}
+          </option>
+        </select>
+
+        <label for="localia" class="label"><strong>Localía</strong></label>
+        <select id="localia" class="form-control" [(ngModel)]="selectedLocalia">
+          <option value="">Seleccione una localía</option>
+          <option *ngFor="let local of localia">
+            {{ local }}
+          </option>
+        </select>
+
+        <label for="torneo" class="label"><strong>Torneo</strong></label>
+        <select
+          id="torneo"
+          class="form-control"
+          [(ngModel)]="selectedTorneo"
+          (change)="onTorneoChange()"
+        >
+          <option value="">Seleccione un torneo</option>
+          <option *ngFor="let item of torneo">{{ item }}</option>
+        </select>
+
+        <label for="jornada" class="label"><strong>Jornada</strong></label>
+        <select
+          id="jornada"
+          class="form-control"
+          [(ngModel)]="selectedJornada"
+          (change)="checkCustomJornada()"
+          *ngIf="selectedTorneo !== 'Torneo Regular'"
+        >
+          <option value="">Seleccione una jornada</option>
+          <option *ngFor="let item of jornada">{{ item }}</option>
+        </select>
+
+        <input
+          *ngIf="selectedTorneo === 'Torneo Regular' || customJornada"
+          type="text"
+          class="form-control mt-2"
+          placeholder="Ingrese su jornada"
+          [(ngModel)]="customJornada"
+          (input)="updateJornada()"
+          (blur)="updateSelectedJornada()"
+        />
+
+        <label for="rival" class="label"><strong>Equipo Rival</strong></label>
+        <input
+          type="text"
+          id="rival"
+          class="form-control"
+          [(ngModel)]="rival"
+          placeholder="Ingrese el equipo rival"
+        />
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="confirmarDatos()"
+        >
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mostrar contenido solo si los datos han sido ingresados -->
+<div *ngIf="datosIngresados">
+  <app-nav></app-nav>
+  <div class="main-container">
+    <app-field
+      class="field-container"
+      (clickCoordinates)="onCoordinatesReceived($event)"
+      (onDeleteLast)="onDeleteLast()"
+      (direccionDetectada)="mostrarDireccion($event)"
+      [currentTag]="selectedTag"
+      [dataList]="dataList"
+    ></app-field>
+    <app-table
+      class="table-container"
+      (onResetTable)="resetTable()"
+      [dataList]="dataList"
+      [equipoId]="getEquipoId()"
+    ></app-table>
+  </div>
+
+  <div class="datos-container">
+    <p><strong>Localía:</strong> {{ selectedLocalia }}</p>
+    <p><strong>Torneo:</strong> {{ selectedTorneo }}</p>
+    <p><strong>Jornada:</strong> {{ selectedJornada }}</p>
+    <label for="tiempo"><strong>Tiempo:</strong> </label>
+    <input
+      tabindex="1"
+      type="text"
+      id="tiempo"
+      maxlength="4"
+      pattern="[0-5][0-9]:[0-5][0-9]"
+      placeholder="MM:SS"
+      (keyup)="timeChange($event)"
+    />
+    <p><strong>Equipo rival:</strong> {{ rival }}</p>
+  </div>
+  <app-tags
+    (onNewTag)="onNewTag($event)"
+    (onNewPlayer)="onNewPlayer1($event)"
+    (onDayChanged)="onDayChanged($event)"
+    (onNewPlayer2)="onNewPlayer2($event)"
+    (onTeamSelected)="handleTeamSelected($event)"
+    [selectedTeamFromMain]="selectedTeamFromModal"
+  >
+  </app-tags>
+</div>

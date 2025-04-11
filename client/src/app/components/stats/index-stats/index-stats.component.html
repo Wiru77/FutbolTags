@@ -1,0 +1,18 @@
+<app-nav></app-nav>
+
+<div class="container">
+  <div id="recuadro-angulos">
+    <div #flecha1 id="flecha1"></div>
+    <div #flecha2 id="flecha2"></div>
+    <div id="angulos">
+      <span id="angulo1">{{ angulo1 }}</span> grados
+      <span id="angulo2">{{ angulo2 }}</span> grados
+    </div>
+    <button id="arriba" (click)="moverArriba()">Arriba</button>
+    <button id="abajo" (click)="moverAbajo()">Abajo</button>
+  </div>
+
+  <button class="submit" (click)="submit()">Submit</button>
+</div>
+
+<button (click)="funcion2()">Ejecutar funcion2</button>

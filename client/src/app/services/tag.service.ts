@@ -1,0 +1,75 @@
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { GLOBAL } from './GLOBAL';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class TagService {
+  public url;
+
+  constructor(private _http: HttpClient) {
+    this.url = GLOBAL.url;
+  }
+
+  registro_tag(data: any, token: any): Observable<any> {
+    let headers = new HttpHeaders({
+      Authorization: token,
+    });
+    return this._http.post(this.url + 'registro_tag', data, {
+      headers: headers,
+    });
+  }
+
+  listar_tags_filtro_admin(token: any): Observable<any> {
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: token, // Enviar token
+    });
+
+    return this._http.get(this.url + 'listar_tags_filtro_admin', {
+      headers: headers,
+    });
+  }
+
+  registro_tag_admin(data: any, token: any): Observable<any> {
+    let headers = new HttpHeaders({
+      Authorization: token,
+    });
+
+    return this._http.post(this.url + 'registro_tag_admin', data, {
+      headers: headers,
+    });
+  }
+
+  eliminar_tag_admin(id: any, token: any): Observable<any> {
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: token,
+    });
+    return this._http.delete(this.url + 'eliminar_tag_admin/' + id, {
+      headers: headers,
+    });
+  }
+
+  obtener_tag_admin(id: any, token: any): Observable<any> {
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: token,
+    });
+    return this._http.get(this.url + 'obtener_tag_admin/' + id, {
+      headers: headers,
+    });
+  }
+
+  actualizar_tag_admin(id: any, data: any, token: any): Observable<any> {
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: token,
+    });
+    return this._http.put(this.url + 'actualizar_tag_admin/' + id, data, {
+      headers: headers,
+    });
+  }
+}
