@@ -14,7 +14,7 @@ var tag_route = require("./routes/tag");
 var stats_route = require("./routes/stats");
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/futTags")
+  .connect("mongodb+srv://JirkiRuiz:test123@futtags.aw7gbqf.mongodb.net/")
   .then(() => {
     app.listen(port, function () {
       console.log("Servidor corriendo en el puerto " + port);
