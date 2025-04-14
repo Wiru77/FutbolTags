@@ -58,7 +58,6 @@ const registro_tag_admin = async function (req, res) {
           abreviatura: `${data.abreviatura}F`,
           efectividad: false,
           asociacion: false,
-          porteria: false,
         };
 
         await Tag.create(falladoTag);

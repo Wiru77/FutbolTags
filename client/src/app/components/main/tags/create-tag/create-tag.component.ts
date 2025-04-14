@@ -4,18 +4,20 @@ import { FormsModule } from '@angular/forms';
 import { NavComponent } from '../../../nav/nav.component';
 import { TagService } from '../../../../services/tag.service';
 import { AdminService } from '../../../../services/admin.service';
+import { CommonModule } from '@angular/common';
 
 declare var iziToast: any;
 
 @Component({
   selector: 'app-create-tag',
   standalone: true,
-  imports: [NavComponent, FormsModule, RouterModule],
+  imports: [NavComponent, FormsModule, RouterModule, CommonModule],
   templateUrl: './create-tag.component.html',
   styleUrl: './create-tag.component.css',
 })
 export class CreateTagComponent implements OnInit {
   public token: any;
+  public tipos = ['Ofensivo', 'Defensivo'];
   public tag = {
     nombre: '',
     abreviatura: '',

@@ -14,6 +14,7 @@ import {
 import { JugadorService } from '../../../services/jugador.service';
 import { AdminService } from '../../../services/admin.service';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 declare var jQuery: any;
 declare var $: any;
@@ -22,7 +23,7 @@ declare var iziToast: any;
 @Component({
   selector: 'app-field',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './field.component.html',
   styleUrls: ['./field.component.css'],
 })

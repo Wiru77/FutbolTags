@@ -34,10 +34,30 @@
         data-bs-toggle="dropdown"
         aria-expanded="false"
       >
-        <i class="fa-solid fa-gear"></i> Opciones
+        <img
+          src="../../../../assets/img/engrane.png"
+          alt="Opciones"
+          style="width: 54px; height: 54px; vertical-align: middle"
+        />
       </button>
 
       <ul class="dropdown-menu">
+        <li>
+          <a
+            class="dropdown-item d-flex justify-content-between align-items-center"
+            [routerLink]="['/panel/tags/registro']"
+          >
+            Crear Tag
+          </a>
+        </li>
+        <li>
+          <a
+            class="dropdown-item d-flex justify-content-between align-items-center"
+            [routerLink]="['/panel/tags/lista']"
+          >
+            Lista de Tags
+          </a>
+        </li>
         <li>
           <a
             class="dropdown-item d-flex justify-content-between align-items-center"

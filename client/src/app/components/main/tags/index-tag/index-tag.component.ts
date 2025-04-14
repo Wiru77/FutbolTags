@@ -17,7 +17,7 @@ declare var $: any;
   styleUrl: './index-tag.component.css',
 })
 export class IndexTagComponent implements OnInit {
-  public tags: any = {};
+  public tags: any[] = [];
   public token: any;
 
   constructor(
@@ -38,6 +38,7 @@ export class IndexTagComponent implements OnInit {
     this._tagService.listar_tags_filtro_admin(token).subscribe(
       (response) => {
         this.tags = response.data;
+        console.log(this.tags);
       },
       (error) => {
         console.log(error);
