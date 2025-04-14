@@ -22,6 +22,7 @@ export class EditTagComponent implements OnInit {
   public token: any;
   public url: any;
   public load_btn = false;
+  public tipos: Array<string> = ['Ofensivo', 'Defensivo'];
 
   constructor(
     private _route: ActivatedRoute,

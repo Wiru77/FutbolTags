@@ -38,6 +38,9 @@ export class TagsComponent implements OnInit {
   public filterPlayerText: string = '';
   public filteredTeam1: any[] = [];
   public filteredTeam2: any[] = [];
+  public filteredTagsWithPorteria: any[] = [];
+  public filteredTagsWithOfensivo: any[] = [];
+  public filteredTagsWithDefensivo: any[] = [];
 
   public previousButton: any = null;
   public previousButtonRight: any = null;
@@ -81,7 +84,7 @@ export class TagsComponent implements OnInit {
 
   initData(): void {
     let token = this._adminService.getToken();
-    // Obtener los equipos
+
     this._equipoService.listar_equipos_filtro_admin(token).subscribe(
       (response) => {
         this.equipos = response.data;
@@ -95,8 +98,17 @@ export class TagsComponent implements OnInit {
 
     this._tagService.listar_tags_filtro_admin(token).subscribe(
       (response: any) => {
-        this.tags = response.data; // Asigna los tags recibidos
-        this.filteredTags = [...this.tags]; // Copia para filtrado
+        this.tags = response.data;
+        this.filteredTags = [...this.tags];
+        this.filteredTagsWithPorteria = this.filteredTags.filter(
+          (tag) => tag.porteria
+        );
+        this.filteredTagsWithOfensivo = this.filteredTags.filter(
+          (tag) => tag.tipo === 'Ofensivo' && !tag.porteria
+        );
+        this.filteredTagsWithDefensivo = this.filteredTags.filter(
+          (tag) => tag.tipo === 'Defensivo' && !tag.porteria
+        );
         this.sortTagsByUsage();
       },
       (error: any) => {

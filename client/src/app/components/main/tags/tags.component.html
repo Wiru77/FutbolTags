@@ -1,3 +1,68 @@
+<!-- Titulos -->
+<div class="titulos-container">
+  <h3>Jugadores</h3>
+  <h3>Tags Ofensivos</h3>
+  <h3>Tags Defensivos</h3>
+  <h3>Tags de Porteria</h3>
+</div>
+
+<div class="tags-container">
+  .
+
+  <!--Tags OFENSIVO Section-->
+  <div class="jugadores-container" id="tagsColumn">
+    <div *ngFor="let jugador of filteredTeam1; let i = index" class="tag-item">
+      <button
+        class="tag-button"
+        [id]="'Local' + i"
+        (click)="playerSelect($event, equipo1[0].equipo, jugador, i, 'Local')"
+        (contextmenu)="
+          playerSelect2($event, equipo1[0].equipo, jugador, i, 'Local')
+        "
+      >
+        {{ jugador.nombre }}
+      </button>
+    </div>
+  </div>
+  <!--Tags OFENSIVO Section-->
+  <div class="ofensivo-container" id="tagsColumn">
+    <div *ngFor="let tag of filteredTagsWithOfensivo" class="tag-item">
+      <button
+        class="tag-button"
+        [id]="tag.nombre"
+        (click)="tagSelect($event, tag)"
+      >
+        {{ tag.nombre }}
+      </button>
+    </div>
+  </div>
+  <!--Tags DEFENSIVO Section-->
+  <div class="defensivo-container" id="tagsColumn">
+    <div *ngFor="let tag of filteredTagsWithDefensivo" class="tag-item">
+      <button
+        class="tag-button"
+        [id]="tag.nombre"
+        (click)="tagSelect($event, tag)"
+      >
+        {{ tag.nombre }}
+      </button>
+    </div>
+  </div>
+  <!--Tags PORTERIA Section-->
+  <div class="porteria-container" id="tagsColumn">
+    <div *ngFor="let tag of filteredTagsWithPorteria" class="tag-item">
+      <button
+        class="tag-button"
+        [id]="tag.nombre"
+        (click)="tagSelect($event, tag)"
+      >
+        {{ tag.nombre }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Filtros 
 <div class="filtros">
   <input
     tabindex="1"
@@ -12,70 +77,4 @@
     (keyup)="filterTags()"
     placeholder="Buscar tag..."
   />
-</div>
-<div class="container">
-  <!-- Team Section -->
-  <div class="teams-container">
-    <div class="column">
-      <!-- Players Section -->
-      <div>
-        <div class="players-container">
-          <div
-            *ngFor="let jugador of filteredTeam1; let i = index"
-            class="player-item"
-          >
-            <button
-              class="player-button"
-              [id]="'Local' + i"
-              (click)="
-                playerSelect($event, equipo1[0].equipo, jugador, i, 'Local')
-              "
-              (contextmenu)="
-                playerSelect2($event, equipo1[0].equipo, jugador, i, 'Local')
-              "
-            >
-              {{ jugador.nombre }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!--Tags Section-->
-  <div class="tag-container" id="tagsColumn">
-    <div *ngFor="let tag of filteredTags" class="tag-item">
-      <button
-        class="tag-button"
-        [id]="tag.nombre"
-        (click)="tagSelect($event, tag)"
-      >
-        {{ tag.nombre }}
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Contenedor dropdowns equipos -->
-
-<div class="buttons-container">
-  <!-- Registro de tags -->
-
-  <button
-    id="list-buttons"
-    class="btn btn-primary mt-3"
-    [routerLink]="['/panel/tags/registro']"
-  >
-    Crear Tag
-  </button>
-
-  <!-- Lista de tags -->
-
-  <button
-    id="list-buttons"
-    class="btn btn-primary mt-3"
-    [routerLink]="['/panel/tags/lista']"
-  >
-    Lista de Tags
-  </button>
-</div>
+</div> -->

@@ -54,15 +54,17 @@
               <!-- Campo Tipo -->
               <div class="col-md-6">
                 <label for="tipo" class="form-label">Tipo</label>
-                <input
-                  type="text"
+                <select
                   class="form-control"
                   id="tipo"
-                  placeholder="Tipo"
-                  required
+                  value="tipo"
                   name="tipo"
                   [(ngModel)]="tag.tipo"
-                />
+                >
+                  <option *ngFor="let tipo of tipos" [ngValue]="tipo">
+                    {{ tipo }}
+                  </option>
+                </select>
               </div>
 
               <div></div>

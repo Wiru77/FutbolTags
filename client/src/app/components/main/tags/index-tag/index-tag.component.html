@@ -42,9 +42,9 @@
         <th>Portería</th>
       </tr>
     </thead>
-    <tbody *ngFor="let item of tags; let indice = index">
+    <tbody>
       <!-- Aqu í se deben incluir filas dinámicamente si se utiliza con un backend -->
-      <tr>
+      <tr *ngFor="let item of tags; let indice = index">
         <td>{{ indice + 1 }}</td>
         <td>
           <h6 style="padding-bottom: 0; margin-bottom: 0">
