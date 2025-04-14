@@ -108,17 +108,17 @@ export class TableComponent implements OnInit {
       return;
     }
 
-    if (!this.data?.jugador1?.jugador?._id || !this.data?.tag) {
-      iziToast.show({
-        title: 'ERROR',
-        titleColor: '#FF0000',
-        color: '#FFF',
-        class: 'text-danger',
-        position: 'topRight',
-        message: 'Los estadísticas deben tener jugador y evento seleccionados',
-      });
-      return;
-    }
+    // if (!this.data?.jugador1?.jugador?._id || !this.data?.tag) {
+    //   iziToast.show({
+    //     title: 'ERROR',
+    //     titleColor: '#FF0000',
+    //     color: '#FFF',
+    //     class: 'text-danger',
+    //     position: 'topRight',
+    //     message: 'Los estadísticas deben tener jugador y evento seleccionados',
+    //   });
+    //   return;
+    // }
 
     this.dataList.forEach((data: any) => {
       const statsData = {

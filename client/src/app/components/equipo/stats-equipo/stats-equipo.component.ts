@@ -8,11 +8,12 @@ import { AdminService } from '../../../services/admin.service';
 import { GLOBAL } from '../../../services/GLOBAL';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { NgApexchartsModule } from 'ng-apexcharts';
 
 @Component({
   selector: 'app-stats-equipo',
   standalone: true,
-  imports: [NavComponent, FormsModule, CommonModule, RouterModule],
+  imports: [NavComponent, FormsModule, CommonModule, RouterModule, NgApexchartsModule],
   templateUrl: './stats-equipo.component.html',
   styleUrl: './stats-equipo.component.css',
 })
@@ -51,6 +52,28 @@ export class StatsEquipoComponent implements OnInit {
   public showCuadrantes: boolean = false;
   public jugadoresCabeceras: Array<any> = [];
   public activeTab: string = 'tablaStats';
+  public playersStats:any = [];
+  public totalInfo: any =[];
+  chartSeries: any[] = [];
+chartLabels: string[] = [];
+intervalDuration = 20;
+pastelPorEvento: {
+  nombre: string;
+  series: number[];
+  options: any;
+}[] = [];
+selectedTags: string[] = [];
+
+
+private coloresPrincipales: string[] = [
+  '#f1c40f', // Amarillo
+  '#3498db', // Azul
+  '#2ecc71', // Verde
+  '#e74c3c', // Rojo
+  '#e67e22', // Naranja
+  '#1abc9c', // Celeste
+  '#9b59b6'  // Morado
+];
 
   constructor(
     private _equipoService: EquipoService,
@@ -81,6 +104,10 @@ export class StatsEquipoComponent implements OnInit {
           this.mainStats = response.data;
           this.teamName = response.equipo_nombre;
           this.stats = [...this.mainStats];
+          this.playersStats = [...this.mainStats]
+          
+
+          this.totalStatsTable()
 
           // Extraer jornadas y receptores
           this.extractJornadas();
@@ -117,6 +144,79 @@ export class StatsEquipoComponent implements OnInit {
       }
     );
   }
+
+  totalStatsTable() {
+    const allStats = this.playersStats.flatMap((player: any) => player.stats);
+    
+    console.log(allStats);
+    
+    const resumenMap = new Map<string, { nombre: string; total: number }>();
+  
+    for (const stat of allStats) {
+      const evento = stat.evento;
+      if (!evento?._id) continue;
+  
+      const eventoId = evento._id;
+      const eventoNombre = evento.nombre || 'Sin nombre';
+  
+      if (!resumenMap.has(eventoId)) {
+        resumenMap.set(eventoId, { nombre: eventoNombre, total: 1 });
+      } else {
+        resumenMap.get(eventoId)!.total += 1;
+      }
+    }
+  
+    const resumenArray = Array.from(resumenMap.entries()).map(([id, data]) => ({
+      id,
+      nombre: data.nombre,
+      total: data.total,
+    }));
+  
+    const totalGlobal = resumenArray.reduce((sum, item) => sum + item.total, 0);
+  
+    this.totalInfo = [
+      { id: 'total', nombre: 'Total', total: totalGlobal },
+      ...resumenArray
+    ];
+
+   this.buildLineChartStats()
+  }
+
+  
+buildLineChartStats() {
+  const allStats = this.playersStats.flatMap((player: any) => player.stats);
+
+  const intervalCount = Math.ceil(90 / this.intervalDuration);
+
+  const intervals = Array.from({ length: intervalCount }, (_, i) => {
+    const start = i * this.intervalDuration;
+    const end = Math.min((i + 1) * this.intervalDuration - 1, 90);
+    return { label: `${start}-${end}`, start, end };
+  });
+
+  const groupedByEvento: { [tagName: string]: number[] } = {};
+
+  for (const stat of allStats) {
+    const tagName = stat.evento?.nombre || 'Sin nombre';
+    const tiempo = parseInt(stat.tiempo?.split(':')[0] || '0', 10);
+
+    const index = intervals.findIndex(i => tiempo >= i.start && tiempo <= i.end);
+    if (index === -1) continue;
+
+    if (!groupedByEvento[tagName]) {
+      groupedByEvento[tagName] = new Array(intervals.length).fill(0);
+    }
+
+    groupedByEvento[tagName][index]++;
+  }
+
+  this.chartSeries = Object.entries(groupedByEvento).map(([name, data]) => ({
+    name,
+    data
+  }));
+
+  this.chartLabels = intervals.map(i => i.label);
+}
 
   extractJornadas(): void {
     const jornadasSet = new Set<string>();
@@ -421,13 +521,14 @@ export class StatsEquipoComponent implements OnInit {
         const total = data.aciertos + data.fallos;
         const efectividad =
           total > 0 ? ((data.aciertos * 100) / total).toFixed(2) : '0.00';
-
+    
         return {
           nombre,
           aciertos: data.aciertos,
           fallos: data.fallos,
           total,
           efectividad,
+          selected: false // << Aquí lo agregas
         };
       }
     );
@@ -436,10 +537,63 @@ export class StatsEquipoComponent implements OnInit {
     this.showEfectividad = true;
   }
 
-  calcularAsociaciones(): void {
-    // 1. Obtener la lista única de jugadores
-    const jugadoresSet = new Set<string>();
 
+  
+
+  generarGraficaPastelPorEvento(): void {
+    const seleccionados = this.efectividadStats.filter(e => e.selected);
+  
+    let colorIndex = 0;
+  
+    this.pastelPorEvento = seleccionados.map(e => {
+      // Toma un color para aciertos, siguiente para fallos (o el mismo si prefieres)
+      const colorAciertos = this.coloresPrincipales[colorIndex % this.coloresPrincipales.length];
+      const colorFallos = this.coloresPrincipales[(colorIndex + 1) % this.coloresPrincipales.length];
+      colorIndex++;
+  
+      return {
+        nombre: e.nombre,
+        series: [e.aciertos, e.fallos],
+        options: {
+          chart: {
+            type: 'pie',
+            height: 300
+          },
+          labels: ['Aciertos', 'Fallos'],
+          colors: [colorAciertos, colorFallos],
+          title: {
+            text: e.nombre
+          }
+        }
+      };
+    });
+  }
+
+  private getRandomColor(): string {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+  onTagChange(event: any): void {
+    const tag = event.target.value;
+    if (event.target.checked) {
+      this.selectedTags.push(tag);
+    } else {
+      this.selectedTags = this.selectedTags.filter(t => t !== tag);
+    }
+    console.log(this.selectedTags);
+    
+    this.calcularAsociaciones(); // recalcular tabla
+  }
+
+
+  calcularAsociaciones(): void {
+    const jugadoresSet = new Set<string>();
+    
+    // 1. Recopilar jugadores únicos
     this.stats.forEach((item) => {
       jugadoresSet.add(item.jugador_nombre);
       item.stats.forEach((stat: any) => {
@@ -448,53 +602,53 @@ export class StatsEquipoComponent implements OnInit {
         }
       });
     });
-
+  
     const jugadores = Array.from(jugadoresSet).sort();
-
-    // 2. Inicializar la matriz de asociaciones con un objeto
-    let asociacionesMap = new Map<string, Map<string, number>>();
-    jugadores.forEach((jugador) => {
-      asociacionesMap.set(jugador, new Map<string, number>());
+  
+    // 2. Inicializar el mapa de asociaciones
+    const asociacionesMap = new Map<string, Map<string, number>>();
+    jugadores.forEach((emisor) => {
+      const receptorMap = new Map<string, number>();
       jugadores.forEach((receptor) => {
-        if (jugador !== receptor) {
-          asociacionesMap.get(jugador)?.set(receptor, 0);
-        }
+        if (emisor !== receptor) receptorMap.set(receptor, 0);
       });
+      asociacionesMap.set(emisor, receptorMap);
     });
-
-    // 3. Contar las asociaciones
+  
+    // 3. Contar asociaciones (emisor → receptor)
     this.stats.forEach((item) => {
+      const emisor = item.jugador_nombre;
       item.stats.forEach((stat: any) => {
-        const jugador = item.jugador_nombre;
         const receptor = stat.receptor?.nombre;
-
-        if (jugador && receptor && jugador !== receptor) {
-          let jugadorMap = asociacionesMap.get(jugador);
-          if (jugadorMap?.has(receptor)) {
-            jugadorMap.set(receptor, (jugadorMap.get(receptor) || 0) + 1);
+        if (receptor && emisor !== receptor) {
+          const receptorMap = asociacionesMap.get(emisor);
+          if (receptorMap?.has(receptor)) {
+            receptorMap.set(receptor, receptorMap.get(receptor)! + 1);
           }
         }
       });
     });
-
-    // 4. Formatear los datos para la tabla
-    this.asociacionesStats = jugadores.map((jugador) => {
-      let fila: any = { jugador };
+  
+    // 4. Convertir a formato de tabla para el HTML
+    this.asociacionesStats = jugadores.map((emisor) => {
+      const fila: any = { jugador: emisor };
       jugadores.forEach((receptor) => {
-        fila[receptor] =
-          jugador !== receptor
-            ? asociacionesMap.get(jugador)?.get(receptor) || 0
-            : '';
+        fila[receptor] = emisor !== receptor
+          ? asociacionesMap.get(emisor)?.get(receptor) || 0
+          : '';
       });
       return fila;
     });
-
-    // 5. Establecer la lista de jugadores como las cabeceras de la tabla
+  
+    // 5. Guardar cabeceras
     this.jugadoresCabeceras = jugadores;
-
-    // 6. Mostrar la tabla de asociaciones
+  
+    // 6. Mostrar la tabla
     this.showAsociaciones = true;
   }
+
+  radarSeries:any = [];
+  radarLabels = ['Izquierda', 'Frente', 'Derecha', 'Detrás' ];
 
   calcularDirecciones(): void {
     let direccionMap = new Map<string, number>();
@@ -518,6 +672,14 @@ export class StatsEquipoComponent implements OnInit {
           totalDirecciones > 0 ? (cantidad / totalDirecciones) * 100 : 0,
       })
     );
+    
+    
+    this.radarSeries = [{
+      name: 'Direcciones',
+      data: this.radarLabels.map(dir =>
+        this.direccionStats.find(d => d.direccion === dir)?.cantidad || 0
+      )
+    }];
   }
 
   getCuadrante3x3(x: number, y: number): string {
