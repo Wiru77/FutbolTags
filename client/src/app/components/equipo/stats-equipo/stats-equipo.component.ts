@@ -13,7 +13,13 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 @Component({
   selector: 'app-stats-equipo',
   standalone: true,
-  imports: [NavComponent, FormsModule, CommonModule, RouterModule, NgApexchartsModule],
+  imports: [
+    NavComponent,
+    FormsModule,
+    CommonModule,
+    RouterModule,
+    NgApexchartsModule,
+  ],
   templateUrl: './stats-equipo.component.html',
   styleUrl: './stats-equipo.component.css',
 })
@@ -23,6 +29,7 @@ export class StatsEquipoComponent implements OnInit {
   public id: any;
   public equipos: Array<any> = [];
   public jugadores: Array<any> = [];
+  public jugadoresAsignados: Array<any> = [];
   public tags: Array<any> = [];
   public jornadas: Array<any> = [];
   public localias: Array<any> = [];
@@ -48,32 +55,35 @@ export class StatsEquipoComponent implements OnInit {
   public showAsociaciones: boolean = false;
   public cuadranteStats3x3: Array<any> = [];
   public cuadranteStats3x5: Array<any> = [];
+  public cuadrantePorteriaStats3x3: Array<any> = [];
   public direccionStats: Array<any> = [];
   public showCuadrantes: boolean = false;
+  public showCuadrantesPorteria: boolean = false;
   public jugadoresCabeceras: Array<any> = [];
   public activeTab: string = 'tablaStats';
-  public playersStats:any = [];
-  public totalInfo: any =[];
+  public playersStats: any = [];
+  public totalInfo: any = [];
+  public totalPorteriaInfo: any = [];
   chartSeries: any[] = [];
-chartLabels: string[] = [];
-intervalDuration = 20;
-pastelPorEvento: {
-  nombre: string;
-  series: number[];
-  options: any;
-}[] = [];
-selectedTags: string[] = [];
+  chartLabels: string[] = [];
+  intervalDuration = 20;
+  pastelPorEvento: {
+    nombre: string;
+    series: number[];
+    options: any;
+  }[] = [];
+  selectedTags: string[] = [];
+  minutosJugadosTable: { nombre: string; minutos: number }[] = [];
 
-
-private coloresPrincipales: string[] = [
-  '#f1c40f', // Amarillo
-  '#3498db', // Azul
-  '#2ecc71', // Verde
-  '#e74c3c', // Rojo
-  '#e67e22', // Naranja
-  '#1abc9c', // Celeste
-  '#9b59b6'  // Morado
-];
+  private coloresPrincipales: string[] = [
+    '#f1c40f', // Amarillo
+    '#3498db', // Azul
+    '#2ecc71', // Verde
+    '#e74c3c', // Rojo
+    '#e67e22', // Naranja
+    '#1abc9c', // Celeste
+    '#9b59b6', // Morado
+  ];
 
   constructor(
     private _equipoService: EquipoService,
@@ -92,7 +102,7 @@ private coloresPrincipales: string[] = [
 
       this._equipoService.listar_jugadores_asignados(this.id).subscribe(
         (response) => {
-          this.jugadores = response.data;
+          this.jugadoresAsignados = response.jugadores;
         },
         (error) => {
           console.log(error);
@@ -104,10 +114,10 @@ private coloresPrincipales: string[] = [
           this.mainStats = response.data;
           this.teamName = response.equipo_nombre;
           this.stats = [...this.mainStats];
-          this.playersStats = [...this.mainStats]
-          
+          this.playersStats = [...this.mainStats];
 
-          this.totalStatsTable()
+          this.totalStatsTable();
+          this.totalPorteriaStatsTable();
 
           // Extraer jornadas y receptores
           this.extractJornadas();
@@ -119,6 +129,9 @@ private coloresPrincipales: string[] = [
           this.filterStats();
           this.jugadores = this.extractJugadores(this.stats);
           this.receptores = this.extractReceptores(this.stats);
+          this.buildMinutosJugadosTable();
+
+          console.log(this.mainStats, 'stats');
         },
         (error: any) => {
           console.error(error);
@@ -146,77 +159,122 @@ private coloresPrincipales: string[] = [
   }
 
   totalStatsTable() {
-    const allStats = this.playersStats.flatMap((player: any) => player.stats);
-    
-    console.log(allStats);
-    
+    const allStats = this.stats.flatMap((player: any) => player.stats);
+
     const resumenMap = new Map<string, { nombre: string; total: number }>();
-  
+
     for (const stat of allStats) {
       const evento = stat.evento;
       if (!evento?._id) continue;
-  
+
       const eventoId = evento._id;
       const eventoNombre = evento.nombre || 'Sin nombre';
-  
+
       if (!resumenMap.has(eventoId)) {
         resumenMap.set(eventoId, { nombre: eventoNombre, total: 1 });
       } else {
         resumenMap.get(eventoId)!.total += 1;
       }
     }
-  
+
     const resumenArray = Array.from(resumenMap.entries()).map(([id, data]) => ({
       id,
       nombre: data.nombre,
       total: data.total,
     }));
-  
+
     const totalGlobal = resumenArray.reduce((sum, item) => sum + item.total, 0);
-  
+
     this.totalInfo = [
       { id: 'total', nombre: 'Total', total: totalGlobal },
-      ...resumenArray
+      ...resumenArray,
     ];
 
-   this.buildLineChartStats()
+    this.buildLineChartStats();
   }
 
-  
-buildLineChartStats() {
-  const allStats = this.playersStats.flatMap((player: any) => player.stats);
+  totalPorteriaStatsTable() {
+    const allStats = this.stats.flatMap((player: any) => player.stats);
 
-  const intervalCount = Math.ceil(90 / this.intervalDuration);
+    // Filtrar solo los stats donde evento.porteria es true
+    const porteriaStats = allStats.filter(
+      (stat: any) => stat.evento?.porteria === true
+    );
 
-  const intervals = Array.from({ length: intervalCount }, (_, i) => {
-    const start = i * this.intervalDuration;
-    const end = Math.min((i + 1) * this.intervalDuration - 1, 90);
-    return { label: `${start}-${end}`, start, end };
-  });
+    const resumenPorteriaMap = new Map<
+      string,
+      { nombre: string; total: number }
+    >();
 
-  const groupedByEvento: { [tagName: string]: number[] } = {};
+    for (const stat of porteriaStats) {
+      const evento = stat.evento;
+      if (!evento?._id) continue;
 
-  for (const stat of allStats) {
-    const tagName = stat.evento?.nombre || 'Sin nombre';
-    const tiempo = parseInt(stat.tiempo?.split(':')[0] || '0', 10);
+      const eventoId = evento._id;
+      const eventoNombre = evento.nombre || 'Sin nombre';
 
-    const index = intervals.findIndex(i => tiempo >= i.start && tiempo <= i.end);
-    if (index === -1) continue;
-
-    if (!groupedByEvento[tagName]) {
-      groupedByEvento[tagName] = new Array(intervals.length).fill(0);
+      if (!resumenPorteriaMap.has(eventoId)) {
+        resumenPorteriaMap.set(eventoId, { nombre: eventoNombre, total: 1 });
+      } else {
+        resumenPorteriaMap.get(eventoId)!.total += 1;
+      }
     }
 
-    groupedByEvento[tagName][index]++;
+    const resumenPorteriaArray = Array.from(resumenPorteriaMap.entries()).map(
+      ([id, data]) => ({
+        id,
+        nombre: data.nombre,
+        total: data.total,
+      })
+    );
+
+    const totalGlobalPorteria = resumenPorteriaArray.reduce(
+      (sum, item) => sum + item.total,
+      0
+    );
+
+    this.totalPorteriaInfo = [
+      { id: 'total', nombre: 'Total Portería', total: totalGlobalPorteria },
+      ...resumenPorteriaArray,
+    ];
   }
 
-  this.chartSeries = Object.entries(groupedByEvento).map(([name, data]) => ({
-    name,
-    data
-  }));
+  buildLineChartStats() {
+    const allStats = this.stats.flatMap((player: any) => player.stats);
 
-  this.chartLabels = intervals.map(i => i.label);
-}
+    const intervalCount = Math.ceil(90 / this.intervalDuration);
+
+    const intervals = Array.from({ length: intervalCount }, (_, i) => {
+      const start = i * this.intervalDuration;
+      const end = Math.min((i + 1) * this.intervalDuration - 1, 90);
+      return { label: `${start}-${end}`, start, end };
+    });
+
+    const groupedByEvento: { [tagName: string]: number[] } = {};
+
+    for (const stat of allStats) {
+      const tagName = stat.evento?.nombre || 'Sin nombre';
+      const tiempo = parseInt(stat.tiempo?.split(':')[0] || '0', 10);
+
+      const index = intervals.findIndex(
+        (i) => tiempo >= i.start && tiempo <= i.end
+      );
+      if (index === -1) continue;
+
+      if (!groupedByEvento[tagName]) {
+        groupedByEvento[tagName] = new Array(intervals.length).fill(0);
+      }
+
+      groupedByEvento[tagName][index]++;
+    }
+
+    this.chartSeries = Object.entries(groupedByEvento).map(([name, data]) => ({
+      name,
+      data,
+    }));
+
+    this.chartLabels = intervals.map((i) => i.label);
+  }
 
   extractJornadas(): void {
     const jornadasSet = new Set<string>();
@@ -417,7 +475,13 @@ buildLineChartStats() {
     this.calcularEfectividad();
     this.calcularEventosPorCuadrante3x3();
     this.calcularEventosPorCuadrante3x5();
+    this.calcularEventosPorteriaPorCuadrante3x3();
     this.calcularDirecciones();
+    this.totalStatsTable();
+    this.totalPorteriaStatsTable();
+    this.buildMinutosJugadosTable();
+    this.buildLineChartStats();
+    //this.calcularAsociaciones();
   }
 
   private isWithinTimeRange(time: string, range: string): boolean {
@@ -521,14 +585,14 @@ buildLineChartStats() {
         const total = data.aciertos + data.fallos;
         const efectividad =
           total > 0 ? ((data.aciertos * 100) / total).toFixed(2) : '0.00';
-    
+
         return {
           nombre,
           aciertos: data.aciertos,
           fallos: data.fallos,
           total,
           efectividad,
-          selected: false // << Aquí lo agregas
+          selected: false, // << Aquí lo agregas
         };
       }
     );
@@ -537,34 +601,35 @@ buildLineChartStats() {
     this.showEfectividad = true;
   }
 
-
-  
-
   generarGraficaPastelPorEvento(): void {
-    const seleccionados = this.efectividadStats.filter(e => e.selected);
-  
+    const seleccionados = this.efectividadStats.filter((e) => e.selected);
+
     let colorIndex = 0;
-  
-    this.pastelPorEvento = seleccionados.map(e => {
+
+    this.pastelPorEvento = seleccionados.map((e) => {
       // Toma un color para aciertos, siguiente para fallos (o el mismo si prefieres)
-      const colorAciertos = this.coloresPrincipales[colorIndex % this.coloresPrincipales.length];
-      const colorFallos = this.coloresPrincipales[(colorIndex + 1) % this.coloresPrincipales.length];
+      const colorAciertos =
+        this.coloresPrincipales[colorIndex % this.coloresPrincipales.length];
+      const colorFallos =
+        this.coloresPrincipales[
+          (colorIndex + 1) % this.coloresPrincipales.length
+        ];
       colorIndex++;
-  
+
       return {
         nombre: e.nombre,
         series: [e.aciertos, e.fallos],
         options: {
           chart: {
             type: 'pie',
-            height: 300
+            height: 300,
           },
           labels: ['Aciertos', 'Fallos'],
           colors: [colorAciertos, colorFallos],
           title: {
-            text: e.nombre
-          }
-        }
+            text: e.nombre,
+          },
+        },
       };
     });
   }
@@ -582,40 +647,35 @@ buildLineChartStats() {
     if (event.target.checked) {
       this.selectedTags.push(tag);
     } else {
-      this.selectedTags = this.selectedTags.filter(t => t !== tag);
+      this.selectedTags = this.selectedTags.filter((t) => t !== tag);
     }
     console.log(this.selectedTags);
-    
+
     this.calcularAsociaciones(); // recalcular tabla
   }
 
-
   calcularAsociaciones(): void {
-    const jugadoresSet = new Set<string>();
-    
-    // 1. Recopilar jugadores únicos
-    this.stats.forEach((item) => {
-      jugadoresSet.add(item.jugador_nombre);
-      item.stats.forEach((stat: any) => {
-        if (stat.receptor?.nombre) {
-          jugadoresSet.add(stat.receptor.nombre);
+    const jugadoresMap = new Map<string, any>();
+
+    // Llenamos el mapa con los jugadores asignados (clave: nombre)
+    this.jugadoresAsignados.forEach((jugador) => {
+      jugadoresMap.set(jugador.nombre, jugador);
+    });
+
+    const asociacionesMap = new Map<string, Map<string, number>>();
+
+    // Inicializamos los contadores para cada par emisor-receptor
+    jugadoresMap.forEach((_, emisorNombre) => {
+      const receptorMap = new Map<string, number>();
+      jugadoresMap.forEach((_, receptorNombre) => {
+        if (emisorNombre !== receptorNombre) {
+          receptorMap.set(receptorNombre, 0);
         }
       });
+      asociacionesMap.set(emisorNombre, receptorMap);
     });
-  
-    const jugadores = Array.from(jugadoresSet).sort();
-  
-    // 2. Inicializar el mapa de asociaciones
-    const asociacionesMap = new Map<string, Map<string, number>>();
-    jugadores.forEach((emisor) => {
-      const receptorMap = new Map<string, number>();
-      jugadores.forEach((receptor) => {
-        if (emisor !== receptor) receptorMap.set(receptor, 0);
-      });
-      asociacionesMap.set(emisor, receptorMap);
-    });
-  
-    // 3. Contar asociaciones (emisor → receptor)
+
+    // Recorremos stats para contar asociaciones reales
     this.stats.forEach((item) => {
       const emisor = item.jugador_nombre;
       item.stats.forEach((stat: any) => {
@@ -628,27 +688,47 @@ buildLineChartStats() {
         }
       });
     });
-  
-    // 4. Convertir a formato de tabla para el HTML
-    this.asociacionesStats = jugadores.map((emisor) => {
-      const fila: any = { jugador: emisor };
-      jugadores.forEach((receptor) => {
-        fila[receptor] = emisor !== receptor
-          ? asociacionesMap.get(emisor)?.get(receptor) || 0
-          : '';
+
+    // Formato para tabla: cada fila tiene el objeto jugador y sus asociaciones
+    this.asociacionesStats = this.jugadoresAsignados.map((jugador) => {
+      const fila: any = { jugador }; // jugador es el objeto completo
+
+      // Llenamos la fila con la cantidad de asociaciones hacia cada otro jugador
+      this.jugadoresAsignados.forEach((otro) => {
+        fila[otro.nombre] =
+          jugador.nombre !== otro.nombre
+            ? asociacionesMap.get(jugador.nombre)?.get(otro.nombre) || 0
+            : '';
       });
+
       return fila;
     });
-  
-    // 5. Guardar cabeceras
-    this.jugadoresCabeceras = jugadores;
-  
-    // 6. Mostrar la tabla
+
+    // Asignar niveles del 1 al 6 a las asociaciones más altas por fila
+    this.asociacionesStats.forEach((fila: any) => {
+      const asociaciones = this.jugadoresAsignados
+        .filter((j) => j.nombre !== fila.jugador.nombre)
+        .map((j) => ({
+          nombre: j.nombre,
+          valor: fila[j.nombre],
+        }))
+        .sort((a, b) => b.valor - a.valor) // mayor a menor
+        .slice(0, 6); // top 6 asociaciones
+
+      asociaciones.forEach((a, index) => {
+        fila[`nivel_${a.nombre}`] = index + 1; // nivel del 1 al 6
+      });
+    });
+
+    // Guardamos las cabeceras (jugadores completos)
+    this.jugadoresCabeceras = this.jugadoresAsignados;
+
+    // Mostrar tabla
     this.showAsociaciones = true;
   }
 
-  radarSeries:any = [];
-  radarLabels = ['Izquierda', 'Frente', 'Derecha', 'Detrás' ];
+  radarSeries: any = [];
+  radarLabels = ['Izquierda', 'Frente', 'Derecha', 'Detrás'];
 
   calcularDirecciones(): void {
     let direccionMap = new Map<string, number>();
@@ -672,14 +752,16 @@ buildLineChartStats() {
           totalDirecciones > 0 ? (cantidad / totalDirecciones) * 100 : 0,
       })
     );
-    
-    
-    this.radarSeries = [{
-      name: 'Direcciones',
-      data: this.radarLabels.map(dir =>
-        this.direccionStats.find(d => d.direccion === dir)?.cantidad || 0
-      )
-    }];
+
+    this.radarSeries = [
+      {
+        name: 'Direcciones',
+        data: this.radarLabels.map(
+          (dir) =>
+            this.direccionStats.find((d) => d.direccion === dir)?.cantidad || 0
+        ),
+      },
+    ];
   }
 
   getCuadrante3x3(x: number, y: number): string {
@@ -833,6 +915,75 @@ buildLineChartStats() {
     this.showCuadrantes = true;
   }
 
+  calcularEventosPorteriaPorCuadrante3x3(): void {
+    let cuadrantePorteriaMap = new Map<string, number>();
+    let totalEventosPorteria = 0;
+
+    const cuadrantes = [
+      'Cuadrante 1',
+      'Cuadrante 2',
+      'Cuadrante 3',
+      'Cuadrante 4',
+      'Cuadrante 5',
+      'Cuadrante 6',
+      'Cuadrante 7',
+      'Cuadrante 8',
+      'Cuadrante 9',
+    ];
+
+    cuadrantes.forEach((cuadrante) => cuadrantePorteriaMap.set(cuadrante, 0));
+
+    this.stats.forEach((item) => {
+      item.stats.forEach((stat: any) => {
+        // Verificar si el evento es de portería y tiene las coordenadas necesarias
+        if (
+          stat.evento?.porteria &&
+          stat.porteriaX !== undefined &&
+          stat.porteriaY !== undefined
+        ) {
+          const cuadrante = this.getCuadrante3x3(
+            stat.porteriaX,
+            stat.porteriaY
+          );
+          cuadrantePorteriaMap.set(
+            cuadrante,
+            (cuadrantePorteriaMap.get(cuadrante) || 0) + 1
+          );
+          totalEventosPorteria++;
+        }
+      });
+    });
+
+    this.cuadrantePorteriaStats3x3 = cuadrantes.map((cuadrante) => ({
+      cuadrante,
+      eventos: cuadrantePorteriaMap.get(cuadrante) || 0,
+      porcentaje:
+        totalEventosPorteria > 0
+          ? ((cuadrantePorteriaMap.get(cuadrante) || 0) /
+              totalEventosPorteria) *
+            100
+          : 0,
+    }));
+
+    const porcentajesPorteriaConIndice = this.cuadrantePorteriaStats3x3.map(
+      (stat, index) => ({
+        porcentaje: stat.porcentaje,
+        indice: index,
+      })
+    );
+
+    porcentajesPorteriaConIndice.sort((a, b) => b.porcentaje - a.porcentaje);
+
+    this.cuadrantePorteriaStats3x3.forEach((stat, indexOriginal) => {
+      const ranking = porcentajesPorteriaConIndice.findIndex(
+        (item) => item.indice === indexOriginal
+      );
+      stat.class = `element-porcentaje-${ranking + 1}`;
+    });
+
+    this.showCuadrantesPorteria = true; // Asegúrate de tener una variable para controlar la visibilidad en el template
+  }
+
   setActiveTab(tab: string) {
     this.activeTab = tab;
   }
@@ -849,6 +1000,37 @@ buildLineChartStats() {
     if (this.activeTab === 'tendencias') {
       return this.tags.filter((tag) => tag.tendencia);
     }
+
+    if (this.activeTab === 'porteria') {
+      return this.tags.filter((tag) => tag.porteria);
+    }
     return this.tags;
+  }
+
+  buildMinutosJugadosTable(): void {
+    const resumen: { nombre: string; minutos: number }[] = [];
+
+    // Agrupar todos los jugadores presentes en stats filtrado
+    const jugadoresFiltrados = Array.from(
+      new Set(this.stats.map((s: any) => s.jugador_nombre))
+    );
+
+    jugadoresFiltrados.forEach((nombre) => {
+      const statsJugador = this.stats.filter(
+        (p: any) => p.jugador_nombre === nombre
+      );
+
+      const minutosTotales = statsJugador.reduce((total: number, p: any) => {
+        const minutos =
+          p.stats?.reduce((sum: number, stat: any) => {
+            return sum + (stat.minutos_jugados || 0);
+          }, 0) || 0;
+        return total + minutos;
+      }, 0);
+
+      resumen.push({ nombre, minutos: minutosTotales });
+    });
+
+    this.minutosJugadosTable = resumen;
   }
 }

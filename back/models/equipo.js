@@ -9,7 +9,7 @@ var EquipoSchema = new Schema({
   jugadores_ids: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "jugador", // Nombre del modelo referenciado.
+      ref: "jugador",
     },
   ],
   createdAt: { type: Date, default: Date.now, required: true },
@@ -18,6 +18,12 @@ var EquipoSchema = new Schema({
     ref: "admin",
     required: true,
   },
+  formacion: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "jugador",
+    },
+  ],
 });
 
 module.exports = mongoose.model("equipo", EquipoSchema);

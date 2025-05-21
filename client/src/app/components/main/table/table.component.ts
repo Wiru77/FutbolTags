@@ -54,6 +54,7 @@ export class TableComponent implements OnInit {
   resetTable() {
     localStorage.removeItem('partidoData');
     localStorage.removeItem('eventosData');
+    localStorage.removeItem('cambios');
     this.onResetTable.emit();
   }
 
@@ -174,5 +175,31 @@ export class TableComponent implements OnInit {
         }
       );
     });
+
+    const cambios = JSON.parse(localStorage.getItem('cambios') || '[]');
+
+    if (cambios.length > 0) {
+      this._jugadorService
+        .registro_minutos_jugados(
+          {
+            cambios,
+            torneo: this.dataList[0]?.torneo,
+            localia: this.dataList[0]?.localia,
+            jornada: this.dataList[0]?.jornada,
+            rival: this.dataList[0]?.rival,
+          },
+          this.token
+        )
+        .subscribe(
+          (response) => {
+            console.log('Minutos jugados guardados:', response);
+            // Limpia los cambios si ya se registraron
+            localStorage.removeItem('cambios');
+          },
+          (error) => {
+            console.error('Error al guardar minutos jugados:', error);
+          }
+        );
+    }
   }
 }

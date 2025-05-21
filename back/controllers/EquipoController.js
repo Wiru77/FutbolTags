@@ -167,7 +167,6 @@ const agregar_jugador_a_equipo = async function (req, res) {
       documento.equipo_id = equipo._id; // Asignar el equipo al jugador
 
       await documento.save();
-      console.log("Jugador actualizado:", documento);
     }
 
     await equipo.save();
@@ -218,11 +217,9 @@ const quitar_jugador_del_equipo = async function (req, res) {
       documento.equipo_id = null; // Eliminar referencia al equipo
 
       await documento.save();
-      console.log("Jugador actualizado:", documento);
     }
 
     await equipo.save();
-    console.log("Equipo actualizado:", equipo);
 
     return res.status(200).json({
       message: "Jugadores eliminados correctamente",
@@ -282,6 +279,147 @@ const listar_stats_equipo = async function (req, res) {
   }
 };
 
+const agregar_jugador_a_formacion = async (req, res) => {
+  try {
+    const { equipoId, jugadorId } = req.body;
+
+    // Buscar equipo
+    let equipo = await Equipo.findById(equipoId);
+    if (!equipo) {
+      return res.status(404).json({ message: "Equipo no encontrado." });
+    }
+
+    // Verificar si el jugador está asignado al equipo
+    const jugadorAsignado = equipo.jugadores_ids.includes(jugadorId);
+    if (!jugadorAsignado) {
+      return res
+        .status(400)
+        .json({ message: "El jugador no pertenece al equipo." });
+    }
+
+    // Verificar si el jugador ya está en la formación
+    if (equipo.formacion.includes(jugadorId)) {
+      return res
+        .status(400)
+        .json({ message: "El jugador ya está en la formación." });
+    }
+
+    // Verificar si ya hay 11 jugadores en la formación
+    if (equipo.formacion.length >= 11) {
+      return res
+        .status(400)
+        .json({ message: "La formación ya tiene 11 jugadores." });
+    }
+
+    // Actualizar el jugador a titular: true
+    await Jugador.findByIdAndUpdate(jugadorId, { titular: true });
+
+    // Agregar jugador a formación
+    equipo.formacion.push(jugadorId);
+    await equipo.save();
+
+    equipo = await Equipo.findById(equipoId).populate("formacion");
+
+    const banca = await Equipo.findById(equipoId).populate("jugadores_ids");
+
+    // Filtrar jugadores de banca (titular: false)
+    const jugadores_banca = banca.jugadores_ids.filter(
+      (jugador) => jugador.titular === false
+    );
+
+    res.status(200).json({
+      message: "Jugador agregado a la formación exitosamente.",
+      equipo,
+      jugadores_banca,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error al agregar jugador a la formación." });
+  }
+};
+
+const listar_jugadores_formacion = async function (req, res) {
+  try {
+    const equipo = await Equipo.findById(req.params.id).populate("formacion");
+
+    if (!equipo || !equipo.formacion) {
+      return res.status(404).json({ message: "Formación no encontrada" });
+    }
+
+    res.status(200).send({
+      jugadores_formacion: equipo.formacion,
+    });
+  } catch (error) {
+    console.error("Error al listar jugadores de la formación:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+const quitar_jugador_de_formacion = async function (req, res) {
+  try {
+    var equipo = await Equipo.findById(req.params.id);
+    if (!equipo) {
+      return res.status(404).json({ message: "Equipo no encontrado" });
+    }
+
+    var jugadores = req.body.jugadores_ids;
+
+    for (const elemento of jugadores) {
+      // Filtrar al jugador del array de jugadores del equipo
+      equipo.formacion = equipo.formacion.filter(
+        (id) => id.toString() !== elemento.toString()
+      );
+
+      // Buscar el jugador y actualizar su estado
+      var documento = await Jugador.findById(elemento);
+      if (!documento) {
+        console.log(`Jugador con ID ${elemento} no encontrado`);
+        continue;
+      }
+
+      documento.titular = false;
+      documento.equipo_id = null; // Eliminar referencia al equipo
+
+      await documento.save();
+    }
+
+    await equipo.save();
+
+    return res.status(200).json({
+      message: "Jugador removido correctamente",
+    });
+  } catch (error) {
+    console.error("Error al eliminar jugadores:", error);
+    return res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+const listar_jugadores_banca = async function (req, res) {
+  try {
+    const equipo = await Equipo.findById(req.params.id).populate(
+      "jugadores_ids"
+    );
+
+    if (!equipo || !equipo.jugadores_ids) {
+      return res.status(404).json({ message: "Jugadores no encontrados" });
+    }
+
+    // Filtrar jugadores de banca (titular: false)
+    const jugadores_banca = equipo.jugadores_ids.filter(
+      (jugador) => jugador.titular === false
+    );
+
+    res.status(200).send({
+      jugadores_banca,
+    });
+  } catch (error) {
+    console.error("Error al listar jugadores de la banca:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
 module.exports = {
   registro_equipo,
   listar_equipos_filtro_admin,
@@ -294,4 +432,8 @@ module.exports = {
   quitar_jugador_del_equipo,
   obtener_portada_equipo,
   listar_stats_equipo,
+  agregar_jugador_a_formacion,
+  listar_jugadores_formacion,
+  quitar_jugador_de_formacion,
+  listar_jugadores_banca,
 };

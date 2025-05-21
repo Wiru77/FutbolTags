@@ -16,7 +16,7 @@
         <!-- Brand Logo -->
         <a
           class="navbar-brand fw-bold"
-          [routerLink]="['/']"
+          [routerLink]="['/panel/tags']"
           routerLinkACtive="active"
           >fut<span class="text-primary">TAGS</span></a
         >
@@ -58,43 +58,8 @@
                 >Jugadores</a
               >
             </li>
-            <li class="nav-item">
-              <a
-                class="nav-link active"
-                [routerLink]="['/panel/stats']"
-                routerLinkACtive="active"
-                >Estadísticas</a
-              >
-            </li>
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                id="megamenuDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-              >
-                Megamenu
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Mega 1</a></li>
-                <li><a class="dropdown-item" href="#">Mega 2</a></li>
-              </ul>
-            </li>
           </ul>
 
-          <!-- Search and Icons -->
-          <form class="d-flex align-items-center">
-            <input
-              class="form-control me-2"
-              type="search"
-              placeholder="Search for products..."
-              aria-label="Search"
-            />
-            <button class="btn btn-outline-secondary" type="submit">
-              <i class="bi bi-search"></i>
-            </button>
-          </form>
           <!-- Sección de usuario en la barra de navegación -->
           <div class="d-flex align-items-center ms-3">
             <ng-container *ngIf="user_lc == undefined">
@@ -120,36 +85,6 @@
 
                 <!-- Menú desplegable -->
                 <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      <i class="ci-home me-2"></i>
-                      Regular link
-                      <span class="badge rounded-pill bg-secondary ms-2"
-                        >2</span
-                      >
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      <i class="ci-profile me-2"></i>
-                      Profile
-                      <span class="badge rounded-pill bg-danger ms-2">3</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      <i class="ci-comment me-2"></i>
-                      Messages
-                      <span class="badge rounded-pill bg-success ms-2">5</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      <i class="ci-external-link me-2"></i>
-                      Settings
-                      <span class="badge rounded-pill bg-warning ms-2">1</span>
-                    </a>
-                  </li>
                   <li><hr class="dropdown-divider" /></li>
                   <li>
                     <a

@@ -243,6 +243,95 @@ const registro_stats = async function (req, res) {
   }
 };
 
+const registro_minutos_jugados = async function (req, res) {
+  try {
+    const {
+      cambios,
+      torneo,
+      localia,
+      jornada,
+      rival, // Asegúrate de que este campo esté incluido en el `req.body`
+    } = req.body;
+
+    // Obtener IDs de jugadores que entran y salen
+    const idsCambio = new Set();
+    for (let cambio of cambios) {
+      idsCambio.add(String(cambio.entra._id));
+      idsCambio.add(String(cambio.sale._id));
+    }
+
+    // Asumimos que el primer jugador tiene el equipo_id correcto
+    const equipoId = cambios[0]?.entra?.equipo_id;
+
+    // Obtener jugadores de la formación
+    const equipo = await Equipo.findById(equipoId).populate("formacion");
+    if (equipo && equipo.formacion) {
+      // Aumentar 90 minutos a los jugadores que NO están en los cambios
+      for (let jugador of equipo.formacion) {
+        const jugadorId = String(jugador._id);
+        if (!idsCambio.has(jugadorId)) {
+          const jugadorDB = await Jugador.findById(jugadorId);
+          if (jugadorDB) {
+            jugadorDB.stats.push({
+              evento: { nombre: "Minutos por formación" },
+              minutos_jugados: 90,
+              torneo,
+              localia,
+              jornada,
+              rival,
+            });
+            await jugadorDB.save();
+          }
+        }
+      }
+    } else {
+      console.log("No se encontró la formación del equipo");
+    }
+
+    // Registrar cambios de entrada y salida
+    for (let cambio of cambios) {
+      const { entra, sale, minutos_jugados_entra, minutos_jugados_sale } =
+        cambio;
+
+      const jugadorEntra = await Jugador.findById(entra._id);
+      if (jugadorEntra) {
+        jugadorEntra.stats.push({
+          evento: { nombre: "Cambio - Entra" },
+          minutos_jugados: minutos_jugados_entra,
+          torneo,
+          localia,
+          jornada,
+          rival,
+        });
+        await jugadorEntra.save();
+      }
+
+      const jugadorSale = await Jugador.findById(sale._id);
+      if (jugadorSale) {
+        jugadorSale.stats.push({
+          evento: { nombre: "Cambio - Sale" },
+          minutos_jugados: minutos_jugados_sale,
+          torneo,
+          localia,
+          jornada,
+          rival,
+        });
+        await jugadorSale.save();
+      }
+    }
+
+    return res.status(200).send({
+      message: "Minutos jugados registrados correctamente",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({
+      message: "Error al registrar minutos jugados",
+      error,
+    });
+  }
+};
+
 module.exports = {
   registro_jugador,
   registro_jugador_admin,
@@ -253,4 +342,5 @@ module.exports = {
   obtener_jugadores_no_asignado,
   obtener_portada,
   registro_stats,
+  registro_minutos_jugados,
 };

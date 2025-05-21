@@ -4,13 +4,14 @@ import { AdminService } from '../../services/admin.service';
 import { Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { NavComponent } from '../nav/nav.component';
+import { RouterModule } from '@angular/router';
 
 declare var iziToast: any;
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, HttpClientModule, NavComponent],
+  imports: [FormsModule, HttpClientModule, NavComponent, RouterModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -57,7 +58,7 @@ export class LoginComponent implements OnInit {
             localStorage.setItem('_id', response.data._id);
             localStorage.setItem('user_data', JSON.stringify(response.data));
 
-            this._router.navigate(['/']);
+            this._router.navigate(['/panel/tags']);
           }
         },
         (error) => {

@@ -66,6 +66,8 @@ export class FieldComponent implements OnInit, AfterViewInit {
   @Output() direccionDetectada = new EventEmitter<string>();
   @Input() dataList: any = [1];
   @Input() currentTag: any;
+  @Input() equipoId!: string;
+  @Input() selectedPlayer2!: any;
 
   @ViewChild('field', { static: true }) fieldElement!: ElementRef;
   @ViewChild('tooltip', { static: true }) tooltipElement!: ElementRef;
@@ -136,6 +138,7 @@ export class FieldComponent implements OnInit, AfterViewInit {
     }, 10); // 10 milisegundos
 
     this.isPorteria = true;
+    this.clearArrowCanvas();
   }
 
   cambiarConBotonACancha(tag: string) {
@@ -236,6 +239,8 @@ export class FieldComponent implements OnInit, AfterViewInit {
           this.detectarDireccion(normalizedAngle);
           this.cambiarAImagenCancha();
         } else {
+          this.clearArrowCanvas();
+
           this.coordenadasCancha = {
             startX: this.dragStartX,
             startY: this.dragStartY,
@@ -259,11 +264,6 @@ export class FieldComponent implements OnInit, AfterViewInit {
         }
       }
     }
-    console.log('>>> handleUp triggered');
-    console.log('currentTag:', this.currentTag);
-    console.log('porteria?', this.currentTag?.porteria);
-
-    console.log('isPorteria?', this.isPorteria);
   }
 
   calcularAngulo() {
@@ -373,33 +373,50 @@ export class FieldComponent implements OnInit, AfterViewInit {
   drawArrow() {
     const canvas = this.arrowCanvas.nativeElement;
     const ctx = canvas.getContext('2d');
+
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (this.isPorteria) {
+      return; // No dibujar la flecha si está en modo portería
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(this.dragStartX, this.dragStartY);
+    ctx.lineTo(this.dragEndX, this.dragEndY);
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    const arrowHeadLength = 10;
+    const angle = Math.atan2(
+      this.dragEndY - this.dragStartY,
+      this.dragEndX - this.dragStartX
+    );
+
+    ctx.beginPath();
+    ctx.moveTo(this.dragEndX, this.dragEndY);
+    ctx.lineTo(
+      this.dragEndX - arrowHeadLength * Math.cos(angle - Math.PI / 6),
+      this.dragEndY - arrowHeadLength * Math.sin(angle - Math.PI / 6)
+    );
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(this.dragEndX, this.dragEndY);
+    ctx.lineTo(
+      this.dragEndX - arrowHeadLength * Math.cos(angle + Math.PI / 6),
+      this.dragEndY - arrowHeadLength * Math.sin(angle + Math.PI / 6)
+    );
+    ctx.stroke();
+  }
+
+  clearArrowCanvas() {
+    const canvas = this.arrowCanvas.nativeElement;
+    const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.beginPath();
-      ctx.moveTo(this.dragStartX, this.dragStartY);
-      ctx.lineTo(this.dragEndX, this.dragEndY);
-      ctx.strokeStyle = 'red';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      const arrowHeadLength = 10;
-      const angle = Math.atan2(
-        this.dragEndY - this.dragStartY,
-        this.dragEndX - this.dragStartX
-      );
-      ctx.beginPath();
-      ctx.moveTo(this.dragEndX, this.dragEndY);
-      ctx.lineTo(
-        this.dragEndX - arrowHeadLength * Math.cos(angle - Math.PI / 6),
-        this.dragEndY - arrowHeadLength * Math.sin(angle - Math.PI / 6)
-      );
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(this.dragEndX, this.dragEndY);
-      ctx.lineTo(
-        this.dragEndX - arrowHeadLength * Math.cos(angle + Math.PI / 6),
-        this.dragEndY - arrowHeadLength * Math.sin(angle + Math.PI / 6)
-      );
-      ctx.stroke();
     }
   }
 

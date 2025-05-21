@@ -25,6 +25,7 @@ export class EditEquipoComponent implements OnInit {
   public token: any;
   public jugadores: Array<any> = [];
   public asignados: Array<any> = [];
+  public titulares: any[] = [];
   public noasignados: Array<any> = [];
   public jugadorSeleccionado: any;
   public imgSelect: any | ArrayBuffer = '';
@@ -46,9 +47,10 @@ export class EditEquipoComponent implements OnInit {
   ngOnInit(): void {
     this._route.params.subscribe((params) => {
       this.id = params['id'];
+
+      // Obtener datos del equipo
       this._equipoService.obtener_equipo_admin(this.id, this.token).subscribe(
         (response) => {
-          console.log(response);
           if (response.data === undefined) {
             this.equipo = undefined;
           } else {
@@ -63,18 +65,31 @@ export class EditEquipoComponent implements OnInit {
       );
     });
 
+    // Obtener jugadores de la formacion
+    this._equipoService.listar_jugadores_formacion(this.id).subscribe(
+      (response) => {
+        this.titulares = response.jugadores_formacion || [];
+        console.log('titulares', this.titulares);
+      },
+      (error) => {
+        console.error('Error al obtener los jugadores titulares:', error);
+      }
+    );
+
+    // Obtener jugadores asignados al equipo
     this._equipoService.listar_jugadores_asignados(this.id).subscribe(
       (response) => {
         this.asignados = response.jugadores;
       },
       (error) => {
-        console.error('Error al obtener los jugadores:', error);
+        console.error('Error al obtener los jugadores asignados:', error);
       }
     );
 
-    this._jugadorService.obtener_jugadores_no_asignado().subscribe(
+    // Obtener todos los jugadores disponibles para asignar
+    this._jugadorService.listar_jugadores_filtro_admin(this.token).subscribe(
       (response) => {
-        this.noasignados = response.data;
+        this.jugadores = response.data;
       },
       (error) => {
         console.error('Error al obtener los jugadores:', error);
@@ -133,11 +148,30 @@ export class EditEquipoComponent implements OnInit {
     this.jugadorSeleccionado = jugador;
   }
 
+  abrirModalFormacion(titular: any): void {
+    this.jugadorSeleccionado = titular;
+  }
+
   agregar(jugador: any): void {
     $('#confirmAddModal').modal('hide');
     $('#confirmAddModal').removeClass('show');
+
     if (!jugador || !jugador._id) {
       console.error('Jugador inválido');
+      return;
+    }
+
+    // Verificar si ya está asignado
+    const yaAsignado = this.asignados.some((j) => j._id === jugador._id);
+    if (yaAsignado) {
+      iziToast.show({
+        title: 'INFO',
+        titleColor: '#FFA500',
+        color: '#FFF',
+        class: 'text-warning',
+        position: 'topRight',
+        message: 'Este jugador ya está asignado al equipo',
+      });
       return;
     }
 
@@ -155,9 +189,6 @@ export class EditEquipoComponent implements OnInit {
           });
 
           // Actualizar listas
-          this.noasignados = this.noasignados.filter(
-            (j) => j._id !== jugador._id
-          );
           this.asignados.push(jugador);
         },
         (error: any) => {
@@ -212,6 +243,98 @@ export class EditEquipoComponent implements OnInit {
             class: 'text-danger',
             position: 'topRight',
             message: 'Error al remover al jugador del equipo',
+          });
+        }
+      );
+  }
+
+  agregarAFormacion(jugador: any): void {
+    $('#confirmAddModalFormacion').modal('hide');
+    $('#confirmAddModalFormacion').removeClass('show');
+
+    if (!jugador || !jugador._id) {
+      console.error('Jugador inválido');
+      return;
+    }
+
+    const yaEnFormacion = this.titulares.some((j) => j._id === jugador._id);
+    if (yaEnFormacion) {
+      iziToast.show({
+        title: 'INFO',
+        titleColor: '#FFA500',
+        color: '#FFF',
+        class: 'text-warning',
+        position: 'topRight',
+        message: 'Este jugador ya está en la formación titular',
+      });
+      return;
+    }
+
+    this._equipoService
+      .agregar_jugador_a_formacion(this.id, jugador._id, this.token)
+      .subscribe(
+        (response: any) => {
+          iziToast.show({
+            title: 'SUCCESS',
+            titleColor: '#1DC74C',
+            color: '#FFF',
+            class: 'text-success',
+            position: 'topRight',
+            message: 'Jugador agregado a la formación titular',
+          });
+
+          this.titulares.push(jugador);
+          console.log(this.id, jugador._id);
+        },
+        (error: any) => {
+          console.error('Error al agregar a formación:', error);
+          iziToast.show({
+            title: 'ERROR',
+            titleColor: '#FF0000',
+            color: '#FFF',
+            class: 'text-danger',
+            position: 'topRight',
+            message: 'Error al agregar jugador a formación',
+          });
+        }
+      );
+  }
+
+  quitarDeFormacion(jugador: any): void {
+    $('#confirmRemoveModalFormacion').modal('hide');
+    $('#confirmRemoveModalFormacion').removeClass('show');
+    if (!jugador || !jugador._id) {
+      console.error('Jugador inválido');
+      return;
+    }
+
+    this._equipoService
+      .quitar_jugador_de_formacion(this.id, jugador._id, this.token)
+      .subscribe(
+        (response: any) => {
+          iziToast.show({
+            title: 'SUCCESS',
+            titleColor: '#1DC74C',
+            color: '#FFF',
+            class: 'text-success',
+            position: 'topRight',
+            message: 'Jugador removido de la titularidad con éxito',
+          });
+
+          // Actualizar listas
+          this.titulares = this.titulares.filter((j) => j._id !== jugador._id);
+        },
+        (error: any) => {
+          console.log(error);
+
+          console.error('Error al remover al jugador:', error);
+          iziToast.show({
+            title: 'ERROR',
+            titleColor: '#FF0000',
+            color: '#FFF',
+            class: 'text-danger',
+            position: 'topRight',
+            message: 'Error al remover al jugador de la titularidad',
           });
         }
       );

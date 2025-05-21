@@ -130,3 +130,24 @@ body {
 #list-buttons {
   width: 160px;
 }
+
+.cambios-button {
+  margin-left: 2.5%;
+}
+
+.cambios-container {
+  display: flex;
+  margin-left: 5%;
+}
+
+.cambios-container table {
+  border-collapse: separate; /* Necesario para que border-spacing funcione */
+  border-spacing: 0 10px; /* Espacio vertical entre filas (y opcionalmente entre columnas) */
+  width: 400px;
+}
+
+.cambios-container td,
+.cambios-container th {
+  padding: 8px 12px;
+  text-align: center;
+}

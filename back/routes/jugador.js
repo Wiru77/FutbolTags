@@ -49,4 +49,10 @@ api.get("/obtener_portada/:img", jugadorController.obtener_portada);
 
 api.post("/registro_stats", auth.auth, jugadorController.registro_stats);
 
+api.post(
+  "/registro_minutos_jugados",
+  auth.auth,
+  jugadorController.registro_minutos_jugados
+);
+
 module.exports = api;

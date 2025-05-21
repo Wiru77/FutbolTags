@@ -205,7 +205,17 @@
           >Tendencias</a
         >
       </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [ngClass]="{ active: activeTab === 'porteria' }"
+          (click)="setActiveTab('porteria')"
+          >Portería</a
+        >
+      </li>
     </ul>
+
+    <!--GENERAAAL-->
 
     <div *ngIf="activeTab === 'tablaStats'">
       <div class="general-container">
@@ -263,7 +273,9 @@
           </tbody>
         </table>
         <div class="mb-3">
-          <label for="intervalInput">Duración de cada intervalo (minutos):</label>
+          <label for="intervalInput"
+            >Duración de cada intervalo (minutos):</label
+          >
           <input
             id="intervalInput"
             type="number"
@@ -272,16 +284,19 @@
             max="90"
             class="form-control"
           />
-          <button class="btn btn-primary mt-2" (click)="buildLineChartStats()">Generar gráfico</button>
+          <button class="btn btn-primary mt-2" (click)="buildLineChartStats()">
+            Generar gráfico
+          </button>
         </div>
-        <apx-chart 
-  [series]="chartSeries"
-  [chart]="{ type: 'line', height: 350 }"
-  [xaxis]="{ categories: chartLabels }"
-  [stroke]="{ curve: 'straight' }"
-  [dataLabels]="{ enabled: true }"
-  [title]="{ text: 'Eventos por Intervalo de Tiempo' }">
-</apx-chart>
+        <apx-chart
+          [series]="chartSeries"
+          [chart]="{ type: 'line', height: 350 }"
+          [xaxis]="{ categories: chartLabels }"
+          [stroke]="{ curve: 'straight' }"
+          [dataLabels]="{ enabled: true }"
+          [title]="{ text: 'Eventos por Intervalo de Tiempo' }"
+        >
+        </apx-chart>
 
         <div class="cuadrante-select-container">
           <label for="tipo-cuadrantes"
@@ -318,8 +333,28 @@
             </div>
           </div>
         </div>
+        <!--TABLA MINUTOS JUGADOS-->
+        <div class="minutos-container">
+          <label for="tipo-minutos"><strong>Minutos Jugados</strong></label>
+          <table class="table table-bordered table-striped mt-3">
+            <thead>
+              <tr>
+                <th>Jugador</th>
+                <th>Minutos Jugados</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of minutosJugadosTable">
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.minutos }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
+
+    <!--EFECTIVIDAAAD-->
 
     <div *ngIf="activeTab === 'efectividad'">
       <div class="efectividad" *ngIf="showEfectividad">
@@ -327,7 +362,8 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th></th> <!-- para el checkbox -->
+              <th></th>
+              <!-- para el checkbox -->
               <th class="table-left">Evento</th>
               <th>Aciertos</th>
               <th>Fallos</th>
@@ -348,64 +384,79 @@
             </tr>
           </tbody>
         </table>
-        <button class="btn btn-primary mt-3" (click)="generarGraficaPastelPorEvento()">
+        <button
+          class="btn btn-primary mt-3"
+          (click)="generarGraficaPastelPorEvento()"
+        >
           Generar Gráficas por Evento
         </button>
-        
+
         <div class="row mt-4" *ngIf="pastelPorEvento.length">
           <div class="col-md-4 mb-4" *ngFor="let item of pastelPorEvento">
             <apx-chart
-            [series]="item.series"
-            [chart]="item.options.chart"
-            [labels]="item.options.labels"
-            [colors]="item.options.colors"
-            [title]="item.options.title">
-          </apx-chart>
+              [series]="item.series"
+              [chart]="item.options.chart"
+              [labels]="item.options.labels"
+              [colors]="item.options.colors"
+              [title]="item.options.title"
+            >
+            </apx-chart>
           </div>
         </div>
       </div>
     </div>
 
+    <!--ASOCIACIONEEES-->
+
     <div *ngIf="activeTab === 'asociaciones'">
+      <h3 class="h3-asoc">Tabla de Asociaciones</h3>
       <div class="asociaciones-container">
-        <h3 class="h3-asoc">Tabla de Asociaciones</h3>
+        <table class="tabla-asociaciones" *ngIf="showAsociaciones">
+          <thead>
+            <tr>
+              <!-- <td></td>-->
+              <td></td>
+              <td
+                class="td-receptor"
+                *ngFor="let jugador of jugadoresCabeceras"
+              >
+                <span class="numero-circulo">{{ jugador.numero }}</span>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let fila of asociacionesStats">
+              <!--<td class="td-jugador-numero">
+                {{ fila.jugador.numero }}
+              </td>-->
+              <td class="td-jugador">
+                <span class="jugador-numero">{{ fila.jugador.numero }} </span>
+                <span class="jugador-nombre">{{ fila.jugador.nombre }}</span>
+              </td>
 
-        <div class="colores">
-          <div class="azul"></div>
-          <h5>Jugadores</h5>
-          <div class="rojo"></div>
-          <h5>Receptores</h5>
-        </div>
-        <div class="asociaciones-container">
-          
-          <table class="tabla-asociaciones" *ngIf="showAsociaciones">
-            <thead>
-              <tr>
-                <td class="jugador-receptor"></td>
-
-                <td
-                  class="td-receptor"
-                  *ngFor="let jugador of jugadoresCabeceras"
-                >
-                  {{ jugador }}
-                </td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let fila of asociacionesStats">
-                <td class="td-jugador">{{ fila.jugador }}</td>
-                <td
-                  class="td-cuadricula"
-                  *ngFor="let jugador of jugadoresCabeceras"
-                >
-                  {{ fila[jugador] || 0 }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+              <td
+                class="td-cuadricula"
+                [ngClass]="{
+                  'misma-persona': fila.jugador.id === jugador.id,
+                  'asociacion-cero': fila[jugador.nombre] === 0,
+                  'nivel-1': fila['nivel_' + jugador.nombre] === 1,
+                  'nivel-2': fila['nivel_' + jugador.nombre] === 2,
+                  'nivel-3': fila['nivel_' + jugador.nombre] === 3,
+                  'nivel-4': fila['nivel_' + jugador.nombre] === 4,
+                  'nivel-5': fila['nivel_' + jugador.nombre] === 5,
+                  'nivel-6': fila['nivel_' + jugador.nombre] === 6
+                }"
+                *ngFor="let jugador of jugadoresCabeceras"
+              >
+                {{ fila[jugador.nombre] || " " }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
+
+    <!--TENDENCIAS-->
 
     <div *ngIf="activeTab === 'tendencias'">
       <div class="direccion-container">
@@ -428,25 +479,60 @@
         </table>
         <div *ngIf="radarSeries.length">
           <apx-chart
-  [series]="radarSeries"
-  [chart]="{ type: 'radar', height: 500 }"
-  [xaxis]="{ categories: radarLabels }"
-  [dataLabels]="{ enabled: true }"
-  [stroke]="{ show: true, width: 2 }"
-  [fill]="{ opacity: 0.3 }"
-  [plotOptions]="{
-    radar: {
-      polygons: {
-        strokeColors: '#909090',
-        connectorColors: '#909090',
-        fill: {
-          colors: ['#f3f3f3', '#fff']
-        }
-      }
-    }
-  }"
-  [title]="{ text: 'Tendencias de juego' }">
-</apx-chart>
+            [series]="radarSeries"
+            [chart]="{ type: 'radar', height: 500 }"
+            [xaxis]="{ categories: radarLabels }"
+            [dataLabels]="{ enabled: true }"
+            [stroke]="{ show: true, width: 2 }"
+            [fill]="{ opacity: 0.3 }"
+            [plotOptions]="{
+              radar: {
+                polygons: {
+                  strokeColors: '#909090',
+                  connectorColors: '#909090',
+                  fill: {
+                    colors: ['#f3f3f3', '#fff']
+                  }
+                }
+              }
+            }"
+            [title]="{ text: 'Tendencias de juego' }"
+          >
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+
+    <!--PORTERIA-->
+
+    <div *ngIf="activeTab === 'porteria'">
+      <div class="general-container">
+        <h3>Eventos de Portería</h3>
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Evento de Portería</th>
+              <th>Total de Stats de Portería</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of totalPorteriaInfo">
+              <td>{{ item.nombre }}</td>
+              <td>{{ item.total }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cuadrante3x3">
+        <h3>Cuadrantes de Portería</h3>
+        <div class="cuadrante-container">
+          <div
+            *ngFor="let stat of cuadrantePorteriaStats3x3"
+            [class]="'element ' + stat.class"
+          >
+            {{ stat.porcentaje | number : "1.2-2" }}%
+          </div>
         </div>
       </div>
     </div>

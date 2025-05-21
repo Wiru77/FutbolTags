@@ -1,6 +1,11 @@
 <div>
-  <button tabindex="-1" (click)="resetTable()">Restablecer tabla</button>
-  <button tabindex="-1" (click)="exportTable()">Exportar Tabla</button>
+  <button data-bs-toggle="modal" data-bs-target="#resetTable" tabindex="-1">
+    Restablecer tabla
+  </button>
+  <button data-bs-toggle="modal" data-bs-target="#guardarStats">
+    Terminar Partido
+  </button>
+  <!-- Bot¿on para abrir el Modal de confirmación -->
 </div>
 <div class="table-container">
   <table>
@@ -53,16 +58,7 @@
   </table>
 </div>
 
-<!-- Botón para abrir el modal -->
-<button
-  class="btn btn-primary"
-  data-bs-toggle="modal"
-  data-bs-target="#guardarStats"
->
-  Guardar
-</button>
-
-<!-- Modal de confirmación -->
+<!-- Modal de confirmación TERMINAR -->
 <div class="modal fade" id="guardarStats" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -94,6 +90,47 @@
           data-bs-dismiss="modal"
         >
           Sí, Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación RESTABLECER -->
+<div class="modal fade" id="resetTable" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Guardado de Estadísticas</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="fs-sm">
+          ¿Estás seguro de reetablecer la tabla? Todos los datos serán
+          eliminados
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          data-bs-dismiss="modal"
+        >
+          Cancelar
+        </button>
+        <!-- Botón que ejecuta la función guardarStats -->
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="resetTable()"
+          data-bs-dismiss="modal"
+        >
+          Sí, Reestablecer
         </button>
       </div>
     </div>

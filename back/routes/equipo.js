@@ -60,10 +60,27 @@ api.get(
   equipoController.obtener_portada_equipo
 );
 
+api.put(
+  "/agregar_jugador_a_formacion",
+  equipoController.agregar_jugador_a_formacion
+);
+
+api.put(
+  "/quitar_jugador_de_formacion/:id",
+  equipoController.quitar_jugador_de_formacion
+);
+
+api.get(
+  "/listar_jugadores_formacion/:id",
+  equipoController.listar_jugadores_formacion
+);
+
 api.get(
   "/listar_stats_equipo/:id",
   auth.auth,
   equipoController.listar_stats_equipo
 );
+
+api.get("/listar_jugadores_banca/:id", equipoController.listar_jugadores_banca);
 
 module.exports = api;

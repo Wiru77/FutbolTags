@@ -91,8 +91,8 @@
               <th>Opciones</th>
             </tr>
           </thead>
-          <tbody *ngFor="let jugador of asignados">
-            <tr>
+          <tbody>
+            <tr *ngFor="let jugador of asignados">
               <td>
                 <div class="d-flex align-items-center">
                   <img
@@ -115,6 +115,14 @@
                   >
                     Quitar del equipo
                   </button>
+                  <button
+                    class="btn btn-primary"
+                    (click)="abrirModalFormacion(jugador)"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmAddModalFormacion"
+                  >
+                    Agregar a titularidad
+                  </button>
                 </div>
               </td>
             </tr>
@@ -127,7 +135,7 @@
 
     <div class="container mt-4">
       <div class="header mb-4">
-        <h1>Jugadores No Asignados</h1>
+        <h1>Lista de Jugadores</h1>
       </div>
       <div>
         <table class="table">
@@ -138,7 +146,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let jugador of noasignados">
+            <tr *ngFor="let jugador of jugadores">
               <td>
                 <div class="d-flex align-items-center">
                   <img
@@ -168,6 +176,52 @@
         </table>
       </div>
     </div>
+
+    <!-- Formacion -->
+
+    <div class="container mt-4">
+      <div class="header mb-4">
+        <h1>Titulares</h1>
+      </div>
+      <div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Opciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let titular of titulares">
+              <td>
+                <div class="d-flex align-items-center">
+                  <img
+                    style="width: 50px"
+                    class="image-thumbnail rounded-0"
+                    [src]="url + 'obtener_portada/' + titular.portada"
+                    alt="Square image"
+                  />
+                  <h6 class="ms-2 mb-0">{{ titular.nombre }}</h6>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex justify-content-start">
+                  <button
+                    class="btn btn-primary"
+                    (click)="abrirModalFormacion(titular)"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmRemoveModalFormacion"
+                  >
+                    Quitar de la formación
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Modal de confirmación para agregar jugador -->
     <div
       class="modal fade"
@@ -211,6 +265,51 @@
       </div>
     </div>
 
+    <!-- Modal de confirmación para agregar jugador a FORMACION -->
+
+    <div
+      class="modal fade"
+      id="confirmAddModalFormacion"
+      tabindex="-1"
+      aria-labelledby="confirmAddModalFormacionLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmAddModalFormacionLabel">
+              Confirmación
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            ¿Estás seguro de que deseas agregar a este jugador a la formación?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="agregarAFormacion(jugadorSeleccionado)"
+            >
+              Sí, Agregar a formación
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal de confirmación para quitar jugador -->
     <div
       class="modal fade"
@@ -247,6 +346,50 @@
               type="button"
               class="btn btn-danger"
               (click)="quitar(jugadorSeleccionado)"
+            >
+              Sí, Quitar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de confirmación para quitar de FORMACION -->
+    <div
+      class="modal fade"
+      id="confirmRemoveModalFormacion"
+      tabindex="-1"
+      aria-labelledby="confirmRemoveModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmRemoveModalLabel">
+              Confirmación
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            ¿Estás seguro de que deseas quitar a este jugador de la formación?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              (click)="quitarDeFormacion(jugadorSeleccionado)"
             >
               Sí, Quitar
             </button>

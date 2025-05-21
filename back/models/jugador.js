@@ -26,6 +26,7 @@ const StatSchema = new Schema({
   rival: String,
   tiempo: String,
   direccion: String,
+  minutos_jugados: Number,
   x: String,
   y: String,
   x2: String,
@@ -33,7 +34,6 @@ const StatSchema = new Schema({
   porteriaX: String,
   porteriaY: String,
 });
-
 
 var JugadorSchema = new Schema({
   nombre: { type: String, required: true },
@@ -44,10 +44,10 @@ var JugadorSchema = new Schema({
   portada: { type: String },
   stats: { type: [StatSchema], default: [] }, // Usa el subesquema
   asignado: { type: Boolean, default: false },
+  titular: { type: Boolean, default: false },
   equipo_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "equipo",
-    default: null,
   },
   usuario_id: {
     type: mongoose.Schema.Types.ObjectId,

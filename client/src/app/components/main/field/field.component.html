@@ -76,6 +76,14 @@
             Ángulo de Dirección
           </a>
         </li>
+        <li>
+          <a
+            class="dropdown-item d-flex justify-content-between align-items-center"
+            [routerLink]="['/panel/equipos', equipoId]"
+          >
+            Ir a Formación
+          </a>
+        </li>
       </ul>
     </div>
     <div class="flecha-direccion" *ngIf="this.invertirX">←</div>

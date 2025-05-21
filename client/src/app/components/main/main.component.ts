@@ -31,11 +31,11 @@ export class MainComponent implements OnInit {
   dataList: any[] = [];
   selectedPlayer1 = {
     equipo: '',
-    jugador: { nombre: '', numero: '', posicion: '', edad: '' },
+    jugador: { nombre: '', numero: '', posicion: '', edad: '', titular: '' },
   };
   selectedPlayer2 = {
     equipo: '',
-    jugador: { nombre: '', numero: '', posicion: '', edad: '' },
+    jugador: { nombre: '', numero: '', posicion: '', edad: '', titular: '' },
   };
   selectedTag = {};
   coordinates = {
@@ -66,6 +66,7 @@ export class MainComponent implements OnInit {
   public selectedTorneo = '';
   public equipo: any;
   public customJornada: any;
+  public equipoId: any;
 
   constructor(
     private _equipoService: EquipoService,
@@ -88,6 +89,11 @@ export class MainComponent implements OnInit {
       this.equipo = partidoStorage.equipo || '';
       this.selectedLocalia = partidoStorage.localia || '';
       this.datosIngresados = true;
+
+      // Extraer el ID del equipo
+      if (partidoStorage.equipo && partidoStorage.equipo._id) {
+        this.equipoId = partidoStorage.equipo._id;
+      }
     } else {
       this.datosIngresados = false;
     }
@@ -230,6 +236,7 @@ export class MainComponent implements OnInit {
               posicion: '',
               edad: '',
               equipo: '',
+              titular: '',
             },
           },
       jugador2: this.selectedPlayer2.jugador.nombre
@@ -241,6 +248,7 @@ export class MainComponent implements OnInit {
               posicion: '',
               edad: '',
               equipo: '',
+              titular: '',
             },
           },
       startX: this.coordinates.startX,
