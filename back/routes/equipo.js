@@ -83,4 +83,11 @@ api.get(
 
 api.get("/listar_jugadores_banca/:id", equipoController.listar_jugadores_banca);
 
+api.put("/agregar_jugador_a_banca", equipoController.agregar_jugador_a_banca);
+
+api.put(
+  "/quitar_jugador_de_banca/:id",
+  equipoController.quitar_jugador_de_banca
+);
+
 module.exports = api;

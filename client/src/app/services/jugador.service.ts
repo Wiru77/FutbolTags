@@ -31,10 +31,16 @@ export class JugadorService {
 
     const fd = new FormData();
     fd.append('nombre', data.nombre);
+    fd.append('alias', data.alias);
     fd.append('numero', data.numero);
     fd.append('posicion', data.posicion);
     fd.append('fecha_nacimiento', data.fecha_nacimiento);
+    fd.append('lugar_procedencia', data.lugar_procedencia);
     fd.append('edad', data.edad);
+    fd.append('estatura', data.estatura);
+    fd.append('peso', data.peso);
+    fd.append('pierna_habil', data.pierna_habil);
+    fd.append('equipo_procedencia', data.equipo_procedencia);
     fd.append('portada', file);
     fd.append('equipo_id', data.equipo_id);
 
@@ -62,10 +68,16 @@ export class JugadorService {
 
       const fd = new FormData();
       fd.append('nombre', data.nombre);
+      fd.append('alias', data.alias);
       fd.append('numero', data.numero);
       fd.append('posicion', data.posicion);
       fd.append('fecha_nacimiento', data.fecha_nacimiento);
+      fd.append('lugar_procedencia', data.lugar_procedencia);
       fd.append('edad', data.edad);
+      fd.append('estatura', data.estatura);
+      fd.append('peso', data.peso);
+      fd.append('pierna_habil', data.pierna_habil);
+      fd.append('equipo_procedencia', data.equipo_procedencia);
       fd.append('portada', data.portada);
       fd.append('stats', data.stats);
 

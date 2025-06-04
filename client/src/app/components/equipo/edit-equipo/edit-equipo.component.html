@@ -68,8 +68,17 @@
               <button class="btn btn-primary" type="submit">
                 Actualizar equipo
               </button>
-              <a [routerLink]="['/panel/equipos']" class="btn btn-warning"
+              <a
+                [routerLink]="['/panel/equipos']"
+                class="btn btn-warning"
+                id="regresar-button"
                 >Regresar</a
+              >
+              <a
+                [routerLink]="['/panel/tags']"
+                class="btn btn-warning"
+                id="iniciar-button"
+                >Iniciar Partido</a
               >
             </div>
           </form>
@@ -117,11 +126,17 @@
                   </button>
                   <button
                     class="btn btn-primary"
-                    (click)="abrirModalFormacion(jugador)"
-                    data-bs-toggle="modal"
-                    data-bs-target="#confirmAddModalFormacion"
+                    id="agregar-titular"
+                    (click)="agregarAFormacion(jugador)"
                   >
                     Agregar a titularidad
+                  </button>
+                  <button
+                    id="agregar-banca"
+                    class="btn btn-primary"
+                    (click)="agregarABanca(jugador)"
+                  >
+                    Agregar a la banca
                   </button>
                 </div>
               </td>
@@ -208,11 +223,52 @@
                 <div class="d-flex justify-content-start">
                   <button
                     class="btn btn-primary"
-                    (click)="abrirModalFormacion(titular)"
-                    data-bs-toggle="modal"
-                    data-bs-target="#confirmRemoveModalFormacion"
+                    (click)="quitarDeFormacion(titular)"
                   >
                     Quitar de la formación
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Banca -->
+
+    <div class="container mt-4">
+      <div class="header mb-4">
+        <h1>Banca</h1>
+      </div>
+      <div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Opciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let suplente of suplentes">
+              <td>
+                <div class="d-flex align-items-center">
+                  <img
+                    style="width: 50px"
+                    class="image-thumbnail rounded-0"
+                    [src]="url + 'obtener_portada/' + suplente.portada"
+                    alt="Square image"
+                  />
+                  <h6 class="ms-2 mb-0">{{ suplente.nombre }}</h6>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex justify-content-start">
+                  <button
+                    class="btn btn-primary"
+                    (click)="quitarDeBanca(suplente)"
+                  >
+                    Quitar de la banca
                   </button>
                 </div>
               </td>
@@ -265,51 +321,6 @@
       </div>
     </div>
 
-    <!-- Modal de confirmación para agregar jugador a FORMACION -->
-
-    <div
-      class="modal fade"
-      id="confirmAddModalFormacion"
-      tabindex="-1"
-      aria-labelledby="confirmAddModalFormacionLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="confirmAddModalFormacionLabel">
-              Confirmación
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            ¿Estás seguro de que deseas agregar a este jugador a la formación?
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Cancelar
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              (click)="agregarAFormacion(jugadorSeleccionado)"
-            >
-              Sí, Agregar a formación
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Modal de confirmación para quitar jugador -->
     <div
       class="modal fade"
@@ -346,50 +357,6 @@
               type="button"
               class="btn btn-danger"
               (click)="quitar(jugadorSeleccionado)"
-            >
-              Sí, Quitar
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal de confirmación para quitar de FORMACION -->
-    <div
-      class="modal fade"
-      id="confirmRemoveModalFormacion"
-      tabindex="-1"
-      aria-labelledby="confirmRemoveModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="confirmRemoveModalLabel">
-              Confirmación
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            ¿Estás seguro de que deseas quitar a este jugador de la formación?
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Cancelar
-            </button>
-            <button
-              type="button"
-              class="btn btn-danger"
-              (click)="quitarDeFormacion(jugadorSeleccionado)"
             >
               Sí, Quitar
             </button>

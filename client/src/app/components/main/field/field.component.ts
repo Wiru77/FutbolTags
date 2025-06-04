@@ -37,7 +37,7 @@ export class FieldComponent implements OnInit, AfterViewInit {
   public angulo2: number = 0;
   public angulo3: number = 0;
   public angulo4: number = 0;
-  public backgroundImage = '../../../../assets/img/cancha.jpg';
+  public backgroundImage = '../../../../assets/img/cancha1.jpg';
   public isPorteria = false;
   public coordenadasCancha: any;
   public normalizedCoordenadasCancha: any;
@@ -82,7 +82,10 @@ export class FieldComponent implements OnInit, AfterViewInit {
     this.token = this._adminService.getToken();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const invertirXStorage = localStorage.getItem('invertirX');
+    this.invertirX = invertirXStorage ? JSON.parse(invertirXStorage) : false;
+  }
 
   ngAfterViewInit() {
     this.updateFieldSize();
@@ -104,7 +107,7 @@ export class FieldComponent implements OnInit, AfterViewInit {
     const esPorteria = this.currentTag?.porteria === true;
     const nuevaImagen = esPorteria
       ? '../../../../assets/img/porteria.jpg'
-      : '../../../../assets/img/cancha.jpg';
+      : '../../../../assets/img/cancha1.jpg';
     const nuevoIsPorteria = esPorteria;
 
     setTimeout(() => {
@@ -117,7 +120,7 @@ export class FieldComponent implements OnInit, AfterViewInit {
   }
 
   cambiarAImagenCancha() {
-    const nuevaImagen = '../../../../assets/img/cancha.jpg';
+    const nuevaImagen = '../../../../assets/img/cancha1.jpg';
 
     setTimeout(() => {
       if (this.fieldElement && this.fieldElement.nativeElement) {
@@ -143,7 +146,6 @@ export class FieldComponent implements OnInit, AfterViewInit {
 
   cambiarConBotonACancha(tag: string) {
     this.currentTag = tag;
-    console.log(tag);
   }
 
   updateFieldSize() {
@@ -274,7 +276,7 @@ export class FieldComponent implements OnInit, AfterViewInit {
       ) *
       (180 / Math.PI);
     const normalizedAngle = (angle + 360) % 360;
-    console.log(`Ángulo final: ${normalizedAngle}`);
+
     return normalizedAngle;
   }
 
@@ -302,8 +304,6 @@ export class FieldComponent implements OnInit, AfterViewInit {
     porteriaX?: number,
     porteriaY?: number
   ) {
-    console.log(startX, startY);
-
     let normalizedStartX = Math.floor((startX / this.fieldWidthPixels) * 100);
     let normalizedStartY = Math.floor(
       (1 - startY / this.fieldHeightPixels) * 100
@@ -348,14 +348,6 @@ export class FieldComponent implements OnInit, AfterViewInit {
       porteriaX: normalizedPorteriaX,
       porteriaY: normalizedPorteriaY,
     });
-    console.log(
-      normalizedEndX,
-      normalizedEndY,
-      normalizedStartX,
-      normalizedStartY,
-      normalizedPorteriaX,
-      normalizedPorteriaY
-    );
   }
 
   clearCanvas() {
@@ -421,7 +413,6 @@ export class FieldComponent implements OnInit, AfterViewInit {
   }
 
   detectarDireccion(angulo: number) {
-    console.log(angulo);
     if (angulo !== 0) {
       const angulos = JSON.parse(localStorage.getItem('angulosData') || 'null');
       const angulosStorage = angulos ? angulos : { angulo1: 45, angulo2: 315 };
@@ -456,6 +447,7 @@ export class FieldComponent implements OnInit, AfterViewInit {
 
   invertirEje() {
     this.invertirX = !this.invertirX;
+    localStorage.setItem('invertirX', JSON.stringify(this.invertirX));
   }
 
   moverArriba(): void {
@@ -492,7 +484,6 @@ export class FieldComponent implements OnInit, AfterViewInit {
   }
 
   submit(): void {
-    console.log('Formulario enviado con ángulos:', this.angulo1, this.angulo2);
     localStorage.setItem(
       'angulosData',
       JSON.stringify({

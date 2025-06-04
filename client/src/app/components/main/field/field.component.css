@@ -1,6 +1,6 @@
 .field {
   background-color: #f0f0f0; /* Color de fondo */
-  background-image: url("../../../../assets/img/cancha.jpg"); /* Imagen de fondo */
+  background-image: url("../../../../assets/img/cancha1.jpg"); /* Imagen de fondo */
   background-size: contain; /* La imagen se ajusta completamente, pero podría dejar espacio vacío */
   background-size: 100% 100%; /* La imagen se estira/comprime para ajustarse al tamaño del contenedor */
   background-position: center;
@@ -52,6 +52,7 @@
   color: rgba(230, 45, 45, 0.808);
   text-shadow: -2px -2px 0 black, 2px -2px 0 rgb(243, 239, 239),
     -2px 2px 0 black, 2px 2px 0 black;
+  font-family: "Arial", "Helvetica", sans-serif;
 }
 
 .invertir-button {

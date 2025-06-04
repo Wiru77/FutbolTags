@@ -103,30 +103,35 @@
       [equipoId]="equipoId"
       [selectedPlayer2]="selectedPlayer2"
     ></app-field>
-    <app-table
-      class="table-container"
-      (onResetTable)="resetTable()"
-      [dataList]="dataList"
-      [equipoId]="getEquipoId()"
-    ></app-table>
+
+    <div class="right-panel">
+      <div class="datos-container">
+        <label for="tiempo"><strong>Tiempo:</strong> </label>
+        <input
+          tabindex="1"
+          type="text"
+          id="tiempo"
+          maxlength="4"
+          pattern="[0-5][0-9]:[0-5][0-9]"
+          placeholder="MM:SS"
+          (keydown)="onKeyDown($event)"
+          (keyup)="timeChange($event)"
+        />
+        <p><strong>Localía:</strong> {{ selectedLocalia }}</p>
+        <p><strong>Torneo:</strong> {{ selectedTorneo }}</p>
+        <p><strong>Jornada:</strong> {{ selectedJornada }}</p>
+
+        <p><strong>Equipo rival:</strong> {{ rival }}</p>
+      </div>
+      <app-table
+        class="table-container"
+        (onResetTable)="resetTable()"
+        [dataList]="dataList"
+        [equipoId]="getEquipoId()"
+      ></app-table>
+    </div>
   </div>
 
-  <div class="datos-container">
-    <p><strong>Localía:</strong> {{ selectedLocalia }}</p>
-    <p><strong>Torneo:</strong> {{ selectedTorneo }}</p>
-    <p><strong>Jornada:</strong> {{ selectedJornada }}</p>
-    <label for="tiempo"><strong>Tiempo:</strong> </label>
-    <input
-      tabindex="1"
-      type="text"
-      id="tiempo"
-      maxlength="4"
-      pattern="[0-5][0-9]:[0-5][0-9]"
-      placeholder="MM:SS"
-      (keyup)="timeChange($event)"
-    />
-    <p><strong>Equipo rival:</strong> {{ rival }}</p>
-  </div>
   <app-tags
     (onNewTag)="onNewTag($event)"
     (onNewPlayer)="onNewPlayer1($event)"

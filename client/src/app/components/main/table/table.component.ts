@@ -5,6 +5,7 @@ import { JugadorService } from '../../../services/jugador.service';
 import { EquipoService } from '../../../services/equipo.service';
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
+import { forkJoin } from 'rxjs';
 declare var iziToast: any;
 declare var jQuery: any;
 declare var $: any;
@@ -55,9 +56,14 @@ export class TableComponent implements OnInit {
     localStorage.removeItem('partidoData');
     localStorage.removeItem('eventosData');
     localStorage.removeItem('cambios');
+    localStorage.removeItem('tiempoPartido');
+    localStorage.removeItem('invertirX');
     this.onResetTable.emit();
   }
 
+  get reversedDataList() {
+    return [...this.dataList].reverse();
+  }
   exportTable() {
     // Crear una copia de dataList con nombres de campos personalizados
     console.log(this.dataList);
@@ -95,111 +101,115 @@ export class TableComponent implements OnInit {
     XLSX.writeFile(workbook, 'ExportedTable.xlsx');
   }
 
-  removeRow(index: number) {
-    this.dataList.splice(index, 1);
-    localStorage.setItem(
-      'eventosData',
-      JSON.stringify({ dataList: this.dataList })
-    );
+  removeRow(item: any) {
+    const index = this.dataList.indexOf(item);
+    if (index > -1) {
+      this.dataList.splice(index, 1);
+      localStorage.setItem(
+        'eventosData',
+        JSON.stringify({ dataList: this.dataList })
+      );
+    }
   }
 
   guardarStats() {
     if (!this.dataList.length) {
-      console.log('No hay datos para guardar.');
+      iziToast.show({
+        title: 'ERROR',
+        titleColor: '#FF0000',
+        color: '#FFF',
+        class: 'text-danger',
+        position: 'topRight',
+        message: 'No hay datos para guardar.',
+      });
       return;
     }
 
-    // if (!this.data?.jugador1?.jugador?._id || !this.data?.tag) {
-    //   iziToast.show({
-    //     title: 'ERROR',
-    //     titleColor: '#FF0000',
-    //     color: '#FFF',
-    //     class: 'text-danger',
-    //     position: 'topRight',
-    //     message: 'Los estadísticas deben tener jugador y evento seleccionados',
-    //   });
-    //   return;
-    // }
-
-    this.dataList.forEach((data: any) => {
+    // Crear lista de peticiones
+    const observables = this.dataList.map((data: any) => {
       const statsData = {
-        localia: data.localia,
-        torneo: data.torneo,
-        jornada: data.jornada,
+        localia: data.localia ?? null,
+        torneo: data.torneo ?? null,
+        jornada: data.jornada ?? null,
         jugador_id: data.jugador1.jugador._id,
-        evento: data.tag,
+        evento: data.tag ?? null,
         receptor: data.jugador2?.jugador?._id ?? null,
-        tiempo: data.time,
+        tiempo: data.time ?? null,
         direccion: data.tag?.tendencia === true ? data.direccion : null,
-        rival: data.rival,
-        x: data.startX,
-        y: data.startY,
+        rival: data.rival ?? null,
+        x: data.startX ?? null,
+        y: data.startY ?? null,
         x2: data.endX !== '-' ? data.endX : null,
         y2: data.endY !== '-' ? data.endY : null,
         porteriaX: data.porteriaX !== '-' ? data.porteriaX : null,
         porteriaY: data.porteriaY !== '-' ? data.porteriaY : null,
       };
 
-      this._jugadorService.registro_stats(statsData, this.token).subscribe(
-        (response) => {
-          iziToast.show({
-            title: 'SUCCESS',
-            titleColor: '#1DC74C',
-            color: '#FFF',
-            class: 'text-success',
-            position: 'topRight',
-            message: 'Se guardaron correctamente las estadísticas',
-          });
-
-          $('#guardarStats').modal('hide');
-          $('.modal-backdrop').removeClass('show');
-          localStorage.removeItem('partidoData');
-          localStorage.removeItem('eventosData');
-
-          if (this.equipoId) {
-            this.router.navigate(['/panel/equipos/stats/', this.equipoId]);
-          } else {
-            console.error('Equipo ID no disponible.');
-          }
-        },
-        (error) => {
-          console.log(error);
-          iziToast.show({
-            title: 'ERROR',
-            titleColor: '#FF0000',
-            color: '#FFF',
-            class: 'text-danger',
-            position: 'topRight',
-            message: 'Error al guardar las estadísticas',
-          });
-        }
-      );
+      return this._jugadorService.registro_stats(statsData, this.token);
     });
 
-    const cambios = JSON.parse(localStorage.getItem('cambios') || '[]');
+    // Ejecutar todas las peticiones al mismo tiempo
+    forkJoin(observables).subscribe(
+      (responses) => {
+        // ✅ Mostrar un solo iziToast cuando TODAS terminan correctamente
+        iziToast.show({
+          title: 'SUCCESS',
+          titleColor: '#1DC74C',
+          color: '#FFF',
+          class: 'text-success',
+          position: 'topRight',
+          message: 'Todas las estadísticas fueron guardadas correctamente',
+        });
 
-    if (cambios.length > 0) {
-      this._jugadorService
-        .registro_minutos_jugados(
-          {
-            cambios,
-            torneo: this.dataList[0]?.torneo,
-            localia: this.dataList[0]?.localia,
-            jornada: this.dataList[0]?.jornada,
-            rival: this.dataList[0]?.rival,
-          },
-          this.token
-        )
-        .subscribe(
-          (response) => {
-            console.log('Minutos jugados guardados:', response);
-            // Limpia los cambios si ya se registraron
-            localStorage.removeItem('cambios');
-          },
-          (error) => {
-            console.error('Error al guardar minutos jugados:', error);
-          }
-        );
-    }
+        $('#guardarStats').modal('hide');
+        $('.modal-backdrop').removeClass('show');
+
+        localStorage.removeItem('partidoData');
+        localStorage.removeItem('eventosData');
+        localStorage.removeItem('tiempoPartido');
+        localStorage.removeItem('cambios');
+        localStorage.removeItem('invertirX');
+
+        // Guardar minutos jugados
+        const cambios = JSON.parse(localStorage.getItem('cambios') || '[]');
+
+        this._jugadorService
+          .registro_minutos_jugados(
+            {
+              cambios,
+              torneo: this.dataList[0]?.torneo ?? null,
+              localia: this.dataList[0]?.localia ?? null,
+              jornada: this.dataList[0]?.jornada ?? null,
+              rival: this.dataList[0]?.rival ?? null,
+              equipo_id: this.dataList[0]?.jugador1?.jugador?.equipo_id ?? null,
+            },
+            this.token
+          )
+          .subscribe(
+            (response) => {
+              localStorage.removeItem('cambios');
+
+              if (this.equipoId) {
+                this.router.navigate(['/panel/equipos/stats/', this.equipoId]);
+              } else {
+                console.error('Equipo ID no disponible.');
+              }
+            },
+            (error) => {
+              console.error('Error al guardar minutos jugados:', error);
+            }
+          );
+      },
+      (error) => {
+        iziToast.show({
+          title: 'ERROR',
+          titleColor: '#FF0000',
+          color: '#FFF',
+          class: 'text-danger',
+          position: 'topRight',
+          message: 'Ocurrió un error al guardar las estadísticas.',
+        });
+      }
+    );
   }
 }

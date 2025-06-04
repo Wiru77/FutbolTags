@@ -1,215 +1,236 @@
-<!-- Titulos -->
-<div class="titulos-container">
-  <h3>Titulares</h3>
-  <h3>Reserva</h3>
-  <h3>Ofensivos</h3>
-  <h3>Defensivos</h3>
-  <h3>Portería</h3>
-</div>
+<div class="main-container">
+  <!-- Botón que abre el primer modal -->
+  <button
+    class="cambios-button btn btn-primary"
+    data-bs-toggle="modal"
+    data-bs-target="#tiempoCambioModal"
+  >
+    Cambiar Jugadores
+  </button>
+  <div class="tags-grid-container">
+    <div class="tags-container1">
+      <!--Tags TITULARES Section-->
 
-<!-- Botón que abre el primer modal -->
-<button
-  class="cambios-button btn btn-primary"
-  data-bs-toggle="modal"
-  data-bs-target="#tiempoCambioModal"
->
-  Cambiar Jugadores
-</button>
+      <h3>Titulares</h3>
+      <h3>Suplentes</h3>
 
-<div class="tags-container">
-  <!--Tags TITULARES Section-->
-  <div class="jugadores-container" id="tagsColumn">
-    <div *ngFor="let jugador of filteredTeam1; let i = index" class="tag-item">
-      <button
-        class="tag-button"
-        [id]="'Local' + i"
-        (click)="playerSelect($event, equipo1[0].equipo, jugador, i, 'Local')"
-        (contextmenu)="
-          playerSelect2($event, equipo1[0].equipo, jugador, i, 'Local')
-        "
-      >
-        {{ jugador.nombre }}
-      </button>
+      <div class="titulares-container" id="tagsColumnTitulares">
+        <div
+          *ngFor="let jugador of filteredTeam1; let i = index"
+          class="tag-item"
+        >
+          <button
+            class="tag-button"
+            [id]="'Local' + i"
+            (click)="
+              playerSelect($event, equipo1[0].equipo, jugador, i, 'Local')
+            "
+            (contextmenu)="
+              playerSelect2($event, equipo1[0].equipo, jugador, i, 'Local')
+            "
+          >
+            {{ jugador.alias }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Tags BANCA Section -->
+
+      <div class="reserva-container" id="tagsColumnReserva">
+        <div *ngFor="let jugador of banca; let i = index" class="tag-item">
+          <button
+            class="tag-button banca"
+            [id]="'Banca' + i"
+            (contextmenu)="
+              playerSelectBanca($event, equipo1[0].equipo, jugador, i, 'Banca')
+            "
+          >
+            {{ jugador.alias }}
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Tags BANCA Section -->
-  <div class="jugadores-container" id="tagsColumn">
-    <div *ngFor="let jugador of filteredBanca; let i = index" class="tag-item">
-      <button
-        class="tag-button banca"
-        [id]="'Banca' + i"
-        (contextmenu)="
-          playerSelect2($event, equipo1[0].equipo, jugador, i, 'Banca')
-        "
-      >
-        {{ jugador.nombre }}
-      </button>
-    </div>
-  </div>
+    <div class="tag-container2">
+      <!--Tags OFENSIVO Section-->
+      <h3>Ofensivos</h3>
 
-  <!--Tags OFENSIVO Section-->
-  <div class="ofensivo-container" id="tagsColumn">
-    <div *ngFor="let tag of filteredTagsWithOfensivo" class="tag-item">
-      <button
-        class="tag-button"
-        [id]="tag.nombre"
-        (click)="tagSelect($event, tag)"
-      >
-        {{ tag.nombre }}
-      </button>
-    </div>
-  </div>
-  <!--Tags DEFENSIVO Section-->
-  <div class="defensivo-container" id="tagsColumn">
-    <div *ngFor="let tag of filteredTagsWithDefensivo" class="tag-item">
-      <button
-        class="tag-button"
-        [id]="tag.nombre"
-        (click)="tagSelect($event, tag)"
-      >
-        {{ tag.nombre }}
-      </button>
+      <div class="ofensivo-container" id="tagsColumn">
+        <div *ngFor="let tag of filteredTagsWithOfensivo" class="tag-item">
+          <button
+            class="tag-button"
+            [id]="tag.nombre"
+            (click)="tagSelect($event, tag)"
+          >
+            {{ tag.nombre }}
+          </button>
+        </div>
+      </div>
+
+      <!--Tags DEFENSIVO Section-->
+      <h3>Defensivos</h3>
+      <div class="defensivo-container" id="tagsColumnDefensivo">
+        <div *ngFor="let tag of filteredTagsWithDefensivo" class="tag-item">
+          <button
+            class="tag-button"
+            [id]="tag.nombre"
+            (click)="tagSelect($event, tag)"
+          >
+            {{ tag.nombre }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
   <!--Tags PORTERIA Section-->
-  <div class="porteria-container" id="tagsColumn">
-    <div *ngFor="let tag of filteredTagsWithPorteria" class="tag-item">
-      <button
-        class="tag-button"
-        [id]="tag.nombre"
-        (click)="tagSelect($event, tag)"
-      >
-        {{ tag.nombre }}
-      </button>
-    </div>
-  </div>
-</div>
 
-<!--Confirmación cambio de tiempo-->
-<div
-  class="modal fade"
-  id="tiempoCambioModal"
-  tabindex="-1"
-  aria-labelledby="tiempoCambioModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="tiempoCambioModalLabel">
-          Tiempo del Cambio
-        </h5>
+  <!--
+   
+    <div class="porteria-container" id="tagsColumn">
+      <div *ngFor="let tag of filteredTagsWithPorteria" class="tag-item">
         <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <label for="tiempoInput"
-          >Ingresa el minuto en que se realiza el cambio:</label
+          class="tag-button"
+          [id]="tag.nombre"
+          (click)="tagSelect($event, tag)"
         >
-        <input
-          type="number"
-          class="form-control mt-2"
-          id="tiempoInput"
-          [(ngModel)]="tiempoCambio"
-        />
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cancelar
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          (click)="abrirConfirmacion()"
-        >
-          Continuar
+          {{ tag.nombre }}
         </button>
       </div>
-    </div>
-  </div>
-</div>
+    </div>-->
 
-<!-- Modal de confirmación -->
-<div
-  class="modal fade"
-  id="confirmCambioModal"
-  tabindex="-1"
-  aria-labelledby="confirmCambioModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="confirmCambioModalLabel">
-          Confirmar Cambio
-        </h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        ¿Estás seguro de que deseas realizar este cambio de jugadores?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cancelar
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          data-bs-dismiss="modal"
-          (click)="cambiarJugadores()"
-        >
-          Sí, Cambiar
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!--CONTENEDOR DE CAMBIOS-->
-
-<div class="cambios-container" *ngIf="jugadoresEntran.length > 0">
-  <table>
-    <thead>
-      <tr>
-        <th>Entra</th>
-        <th>&nbsp;</th>
-        <th>Sale</th>
-        <th>&nbsp;</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let jugadorEntra of jugadoresEntran; let i = index">
-        <td>{{ jugadorEntra.nombre }}</td>
-        <td class="tiempo">{{ jugadorEntra.tiempo_cambio }}'</td>
-        <td>{{ jugadoresSalen[i].nombre }}</td>
-        <td>
+  <!--Confirmación cambio de tiempo-->
+  <div
+    class="modal fade"
+    id="tiempoCambioModal"
+    tabindex="-1"
+    aria-labelledby="tiempoCambioModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tiempoCambioModalLabel">
+            Tiempo del Cambio
+          </h5>
           <button
-            (click)="eliminarCambio(i)"
-            style="
-              background-color: rgb(255, 75, 75);
-              color: rgb(255, 255, 255);
-              border: none;
-              padding: 4px 8px;
-              border-radius: 4px;
-              cursor: pointer;
-            "
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <label for="tiempoInput"
+            >Ingresa el minuto en que se realiza el cambio:</label
           >
-            X
+          <input
+            type="number"
+            class="form-control mt-2"
+            id="tiempoInput"
+            [(ngModel)]="tiempoCambio"
+          />
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancelar
           </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="abrirConfirmacion()"
+          >
+            Continuar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación -->
+  <div
+    class="modal fade"
+    id="confirmCambioModal"
+    tabindex="-1"
+    aria-labelledby="confirmCambioModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmCambioModalLabel">
+            Confirmar Cambio
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          ¿Estás seguro de que deseas realizar este cambio de jugadores?
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-dismiss="modal"
+            (click)="cambiarJugadores()"
+          >
+            Sí, Cambiar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--CONTENEDOR DE CAMBIOS-->
+
+  <div class="cambios-container" *ngIf="jugadoresEntran.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>Entra</th>
+          <th>&nbsp;</th>
+          <th>Sale</th>
+          <th>&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let jugadorEntra of jugadoresEntran; let i = index">
+          <td>{{ jugadorEntra.alias }}</td>
+          <td class="tiempo">{{ jugadorEntra.tiempo_cambio }}'</td>
+          <td>{{ jugadoresSalen[i].alias }}</td>
+          <td>
+            <button
+              (click)="eliminarCambio(i)"
+              style="
+                background-color: rgb(255, 75, 75);
+                color: rgb(255, 255, 255);
+                border: none;
+                padding: 4px 8px;
+                border-radius: 4px;
+                cursor: pointer;
+              "
+            >
+              X
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <!-- Filtros 

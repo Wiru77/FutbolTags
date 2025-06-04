@@ -24,6 +24,12 @@ var EquipoSchema = new Schema({
       ref: "jugador",
     },
   ],
+  banca: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "jugador",
+    },
+  ],
 });
 
 module.exports = mongoose.model("equipo", EquipoSchema);

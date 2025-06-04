@@ -422,7 +422,7 @@ export class StatsEquipoComponent implements OnInit {
         return {
           ...item,
           stats: item.stats.filter(
-            (stat: any) => stat.receptor.nombre === this.selectedPlayer2
+            (stat: any) => stat.receptor?.nombre === this.selectedPlayer2
           ),
         };
       });
@@ -481,10 +481,17 @@ export class StatsEquipoComponent implements OnInit {
     this.totalPorteriaStatsTable();
     this.buildMinutosJugadosTable();
     this.buildLineChartStats();
-    //this.calcularAsociaciones();
+    this.calcularAsociaciones();
   }
 
-  private isWithinTimeRange(time: string, range: string): boolean {
+  private isWithinTimeRange(
+    time: string | null | undefined,
+    range: string
+  ): boolean {
+    // Validación defensiva para evitar errores con time inválido
+    if (!time || typeof time !== 'string' || !time.includes(':')) {
+      return false; // No entra al rango si no hay tiempo válido
+    }
     const [minutes, seconds] = time.split(':').map(Number);
     const totalSeconds = minutes * 60 + seconds;
 
@@ -553,6 +560,11 @@ export class StatsEquipoComponent implements OnInit {
     this.calcularEventosPorCuadrante3x3();
     this.calcularEventosPorCuadrante3x5();
     this.calcularDirecciones();
+    this.buildMinutosJugadosTable();
+    this.totalStatsTable();
+    this.calcularEventosPorteriaPorCuadrante3x3();
+    this.calcularEventosPorteriaPorCuadrante3x3();
+    this.totalPorteriaStatsTable();
   }
 
   calcularEfectividad(): void {
@@ -564,8 +576,8 @@ export class StatsEquipoComponent implements OnInit {
     // Recorrer las estadísticas para contar eventos aciertos y fallos
     this.stats.forEach((item) => {
       item.stats.forEach((stat: any) => {
-        const nombreBase = stat.evento.nombre.replace(' Fallado', ''); // Quitar "Fallado"
-        const esFallado = stat.evento.nombre.includes('Fallado');
+        const nombreBase = stat.evento?.nombre.replace(' Fallado', ''); // Quitar "Fallado"
+        const esFallado = stat.evento?.nombre.includes('Fallado');
 
         if (!efectividadMap.has(nombreBase)) {
           efectividadMap.set(nombreBase, { aciertos: 0, fallos: 0 });

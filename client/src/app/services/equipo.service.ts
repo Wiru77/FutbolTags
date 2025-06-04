@@ -189,4 +189,38 @@ export class EquipoService {
       headers: headers,
     });
   }
+
+  agregar_jugador_a_banca(
+    equipoId: any,
+    jugadorId: any,
+    token: any
+  ): Observable<any> {
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: token,
+    });
+
+    return this._http.put(
+      this.url + 'agregar_jugador_a_banca',
+      { equipoId: equipoId, jugadorId: jugadorId },
+      { headers: headers }
+    );
+  }
+
+  quitar_jugador_de_banca(
+    id: any,
+    jugadorId: any,
+    token: any
+  ): Observable<any> {
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: token,
+    });
+
+    return this._http.put(
+      this.url + 'quitar_jugador_de_banca/' + id,
+      { jugadores_ids: [jugadorId] }, // El backend espera un array
+      { headers: headers }
+    );
+  }
 }

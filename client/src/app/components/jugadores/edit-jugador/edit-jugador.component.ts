@@ -91,10 +91,16 @@ export class EditJugadorComponent implements OnInit {
     if (updateForm.valid) {
       var data: any = {
         nombre: this.jugador.nombre,
+        alias: this.jugador.alias,
         numero: this.jugador.numero,
         posicion: this.jugador.posicion,
         fecha_nacimiento: this.jugador.fecha_nacimiento,
+        lugar_procedencia: this.jugador.lugar_procedencia,
         edad: this.jugador.edad,
+        estatura: this.jugador.estatura,
+        peso: this.jugador.peso,
+        pierna_habil: this.jugador.pierna_habil,
+        equipo_procedencia: this.jugador.equipo_procedencia,
         equipo_id: this.jugador.equipo_id || null, // Si no hay equipo, lo guarda como null
       };
 

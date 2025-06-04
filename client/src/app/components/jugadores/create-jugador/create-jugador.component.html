@@ -35,12 +35,30 @@
                   required
                   name="nombre"
                   [(ngModel)]="jugador.nombre"
+                  #nombre="ngModel"
+                  [ngClass]="{ 'is-invalid': nombre.invalid && nombre.touched }"
+                />
+              </div>
+
+              <!-- Campo Alias -->
+              <div class="col-md-6">
+                <label for="alias" class="form-label">Alias</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="alias"
+                  placeholder="Alias del Jugador"
+                  required
+                  name="alias"
+                  [(ngModel)]="jugador.alias"
+                  #alias="ngModel"
+                  [ngClass]="{ 'is-invalid': alias.invalid && alias.touched }"
                 />
               </div>
 
               <!-- Campo Numero -->
               <div class="col-md-6">
-                <label for="numero" class="form-label">Número</label>
+                <label for="numero" class="form-label">Número de dorsal</label>
                 <input
                   type="text"
                   class="form-control"
@@ -49,6 +67,8 @@
                   required
                   name="numero"
                   [(ngModel)]="jugador.numero"
+                  #numero="ngModel"
+                  [ngClass]="{ 'is-invalid': numero.invalid && numero.touched }"
                 />
               </div>
 
@@ -63,6 +83,10 @@
                   required
                   name="posicion"
                   [(ngModel)]="jugador.posicion"
+                  #posicion="ngModel"
+                  [ngClass]="{
+                    'is-invalid': posicion.invalid && posicion.touched
+                  }"
                 />
               </div>
 
@@ -79,9 +103,15 @@
                   name="fecha_nacimiento"
                   [(ngModel)]="jugador.fecha_nacimiento"
                   (ngModelChange)="calcularEdad()"
+                  #fecha_nacimiento="ngModel"
+                  [ngClass]="{
+                    'is-invalid':
+                      fecha_nacimiento.invalid && fecha_nacimiento.touched
+                  }"
                 />
               </div>
-              <!-- Campo Edad -->
+
+              <!-- Campo Edad (solo lectura, sin validación) -->
               <div class="col-md-6">
                 <label for="edad" class="form-label">Edad</label>
                 <input
@@ -92,23 +122,123 @@
                   readonly
                 />
               </div>
-            </div>
 
-            <!-- Campo Equipo -->
-            <div class="col-md-6">
-              <label for="equipo" class="form-label">Equipo</label>
-              <select
-                class="form-select"
-                id="equipo"
-                name="equipo_id"
-                [(ngModel)]="jugador.equipo_id"
-                required
-              >
-                <option [ngValue]="null">Sin equipo</option>
-                <option *ngFor="let equipo of equipos" [ngValue]="equipo._id">
-                  {{ equipo.nombre }}
-                </option>
-              </select>
+              <!-- Campo Lugar de Procedencia -->
+              <div class="col-md-6">
+                <label for="lugar_procedencia" class="form-label"
+                  >Lugar de Procedencia</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="lugar_procedencia"
+                  placeholder="Lugar de Procedencia"
+                  required
+                  name="lugar_procedencia"
+                  [(ngModel)]="jugador.lugar_procedencia"
+                  #lugar_procedencia="ngModel"
+                  [ngClass]="{
+                    'is-invalid':
+                      lugar_procedencia.invalid && lugar_procedencia.touched
+                  }"
+                />
+              </div>
+
+              <!-- Campo Estatura -->
+              <div class="col-md-6">
+                <label for="estatura" class="form-label">Estatura en cm</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="estatura"
+                  placeholder="Estatura del jugador"
+                  required
+                  name="estatura"
+                  [(ngModel)]="jugador.estatura"
+                  #estatura="ngModel"
+                  [ngClass]="{
+                    'is-invalid': estatura.invalid && estatura.touched
+                  }"
+                />
+              </div>
+
+              <!-- Campo Peso -->
+              <div class="col-md-6">
+                <label for="peso" class="form-label">Peso en kg</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="peso"
+                  placeholder="Peso del jugador"
+                  required
+                  name="peso"
+                  [(ngModel)]="jugador.peso"
+                  #peso="ngModel"
+                  [ngClass]="{ 'is-invalid': peso.invalid && peso.touched }"
+                />
+              </div>
+
+              <!-- Campo Pierna Habil -->
+              <div class="col-md-6">
+                <label for="pierna_habil" class="form-label"
+                  >Pierna hábil</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="pierna_habil"
+                  placeholder="Pierna hábil"
+                  required
+                  name="pierna_habil"
+                  [(ngModel)]="jugador.pierna_habil"
+                  #pierna_habil="ngModel"
+                  [ngClass]="{
+                    'is-invalid': pierna_habil.invalid && pierna_habil.touched
+                  }"
+                />
+              </div>
+
+              <!-- Campo Equipo de Procedencia -->
+              <div class="col-md-6">
+                <label for="equipo_procedencia" class="form-label"
+                  >Equipo de Procedencia</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="equipo_procedencia"
+                  placeholder="Equipo de procedencia"
+                  required
+                  name="equipo_procedencia"
+                  [(ngModel)]="jugador.equipo_procedencia"
+                  #equipo_procedencia="ngModel"
+                  [ngClass]="{
+                    'is-invalid':
+                      equipo_procedencia.invalid && equipo_procedencia.touched
+                  }"
+                />
+              </div>
+
+              <!-- Campo Equipo -->
+              <div class="col-md-6">
+                <label for="equipo" class="form-label">Equipo</label>
+                <select
+                  class="form-select"
+                  id="equipo"
+                  name="equipo_id"
+                  [(ngModel)]="jugador.equipo_id"
+                  required
+                  #equipo_id="ngModel"
+                  [ngClass]="{
+                    'is-invalid': equipo_id.invalid && equipo_id.touched
+                  }"
+                >
+                  <option [ngValue]="null">Sin equipo</option>
+                  <option *ngFor="let equipo of equipos" [ngValue]="equipo._id">
+                    {{ equipo.nombre }}
+                  </option>
+                </select>
+              </div>
             </div>
 
             <!-- Campo de cargar imagen-->

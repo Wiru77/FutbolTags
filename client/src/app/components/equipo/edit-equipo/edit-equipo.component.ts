@@ -26,6 +26,7 @@ export class EditEquipoComponent implements OnInit {
   public jugadores: Array<any> = [];
   public asignados: Array<any> = [];
   public titulares: any[] = [];
+  public suplentes: any[] = [];
   public noasignados: Array<any> = [];
   public jugadorSeleccionado: any;
   public imgSelect: any | ArrayBuffer = '';
@@ -69,10 +70,19 @@ export class EditEquipoComponent implements OnInit {
     this._equipoService.listar_jugadores_formacion(this.id).subscribe(
       (response) => {
         this.titulares = response.jugadores_formacion || [];
-        console.log('titulares', this.titulares);
       },
       (error) => {
         console.error('Error al obtener los jugadores titulares:', error);
+      }
+    );
+
+    // Obtener jugadores de la banca
+    this._equipoService.listar_jugadores_banca(this.id).subscribe(
+      (response) => {
+        this.suplentes = response.jugadores_banca || [];
+      },
+      (error) => {
+        console.error('Error al obtener los jugadores de la banca:', error);
       }
     );
 
@@ -257,6 +267,7 @@ export class EditEquipoComponent implements OnInit {
       return;
     }
 
+    // Validación: ya está en formación
     const yaEnFormacion = this.titulares.some((j) => j._id === jugador._id);
     if (yaEnFormacion) {
       iziToast.show({
@@ -270,6 +281,21 @@ export class EditEquipoComponent implements OnInit {
       return;
     }
 
+    // ✅ Validación: ya está en la banca
+    const yaEnBanca = this.suplentes?.some((j) => j._id === jugador._id);
+    if (yaEnBanca) {
+      iziToast.show({
+        title: 'INFO',
+        titleColor: '#FFA500',
+        color: '#FFF',
+        class: 'text-warning',
+        position: 'topRight',
+        message: 'Este jugador ya está en la banca y no puede ser titular',
+      });
+      return;
+    }
+
+    // Enviar petición al backend
     this._equipoService
       .agregar_jugador_a_formacion(this.id, jugador._id, this.token)
       .subscribe(
@@ -294,7 +320,8 @@ export class EditEquipoComponent implements OnInit {
             color: '#FFF',
             class: 'text-danger',
             position: 'topRight',
-            message: 'Error al agregar jugador a formación',
+            message:
+              error?.error?.message || 'Error al agregar jugador a formación',
           });
         }
       );
@@ -335,6 +362,92 @@ export class EditEquipoComponent implements OnInit {
             class: 'text-danger',
             position: 'topRight',
             message: 'Error al remover al jugador de la titularidad',
+          });
+        }
+      );
+  }
+
+  agregarABanca(jugador: any): void {
+    if (!jugador || !jugador._id) {
+      console.error('Jugador inválido');
+      return;
+    }
+
+    const yaEnBanca = this.suplentes.some((j) => j._id === jugador._id);
+    if (yaEnBanca) {
+      iziToast.show({
+        title: 'INFO',
+        titleColor: '#FFA500',
+        color: '#FFF',
+        class: 'text-warning',
+        position: 'topRight',
+        message: 'Este jugador ya está en la banca',
+      });
+      return;
+    }
+
+    this._equipoService
+      .agregar_jugador_a_banca(this.id, jugador._id, this.token)
+      .subscribe(
+        (response: any) => {
+          iziToast.show({
+            title: 'SUCCESS',
+            titleColor: '#1DC74C',
+            color: '#FFF',
+            class: 'text-success',
+            position: 'topRight',
+            message: 'Jugador agregado a la banca',
+          });
+
+          this.suplentes.push(jugador);
+        },
+        (error: any) => {
+          console.error('Error al agregar a la banca:', error);
+          iziToast.show({
+            title: 'ERROR',
+            titleColor: '#FF0000',
+            color: '#FFF',
+            class: 'text-danger',
+            position: 'topRight',
+            message: 'El jugador es titular',
+          });
+        }
+      );
+  }
+
+  quitarDeBanca(jugador: any): void {
+    if (!jugador || !jugador._id) {
+      console.error('Jugador inválido');
+      return;
+    }
+
+    this._equipoService
+      .quitar_jugador_de_banca(this.id, jugador._id, this.token)
+      .subscribe(
+        (response: any) => {
+          iziToast.show({
+            title: 'SUCCESS',
+            titleColor: '#1DC74C',
+            color: '#FFF',
+            class: 'text-success',
+            position: 'topRight',
+            message: 'Jugador removido de la banca con éxito',
+          });
+
+          // Actualizar listas
+          this.suplentes = this.suplentes.filter((j) => j._id !== jugador._id);
+        },
+        (error: any) => {
+          console.log(error);
+
+          console.error('Error al remover al jugador:', error);
+          iziToast.show({
+            title: 'ERROR',
+            titleColor: '#FF0000',
+            color: '#FFF',
+            class: 'text-danger',
+            position: 'topRight',
+            message: 'Error al remover al jugador de la banca',
           });
         }
       );

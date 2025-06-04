@@ -1,0 +1,17 @@
+#iniciar-button {
+  background-color: rgb(11, 163, 31);
+  color: white;
+}
+
+#regresar-button {
+  margin-right: 68%;
+  width: 120px;
+}
+
+#agregar-titular {
+  margin-left: 10px;
+}
+
+#agregar-banca {
+  margin-left: 10px;
+}

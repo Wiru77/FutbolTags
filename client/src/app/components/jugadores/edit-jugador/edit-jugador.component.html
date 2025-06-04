@@ -36,6 +36,20 @@
                 />
               </div>
 
+              <!-- Campo alias -->
+              <div class="col-md-6">
+                <label for="alias" class="form-label">Alias</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="alias"
+                  placeholder="Alias del Jugador"
+                  required
+                  name="alias"
+                  [(ngModel)]="jugador.alias"
+                />
+              </div>
+
               <!-- Campo Número -->
               <div class="col-md-6">
                 <label for="numero" class="form-label">Número</label>
@@ -80,6 +94,22 @@
                 />
               </div>
 
+              <!-- Campo Lugar de Procedencia-->
+              <div class="col-md-6">
+                <label for="lugar_procedencia" class="form-label"
+                  >Lugar de Procedencia</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="lugar_procedencia"
+                  placeholder="Lugar de procedencia"
+                  required
+                  name="lugar_procedencia"
+                  [(ngModel)]="jugador.lugar_procedencia"
+                />
+              </div>
+
               <!-- Campo Edad -->
               <div class="col-md-6">
                 <label for="edad" class="form-label">Edad</label>
@@ -89,6 +119,66 @@
                   id="edad"
                   [value]="jugador.edad"
                   readonly
+                />
+              </div>
+
+              <!-- Campo Estatura -->
+              <div class="col-md-6">
+                <label for="estatura" class="form-label">Estatura</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="estatura"
+                  placeholder="Estatura del jugador"
+                  required
+                  name="estatura"
+                  [(ngModel)]="jugador.estatura"
+                />
+              </div>
+
+              <!-- Campo Peso -->
+              <div class="col-md-6">
+                <label for="peso" class="form-label">Peso</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="peso"
+                  placeholder="Peso del jugador"
+                  required
+                  name="peso"
+                  [(ngModel)]="jugador.peso"
+                />
+              </div>
+
+              <!-- Campo Pierna Habil -->
+              <div class="col-md-6">
+                <label for="pierna_habil" class="form-label"
+                  >Pierna hábil</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="pierna_habil"
+                  placeholder="Pierna hábil del Jugador"
+                  required
+                  name="pierna_habil"
+                  [(ngModel)]="jugador.pierna_habil"
+                />
+              </div>
+
+              <!-- Campo Equipo de procedencia -->
+              <div class="col-md-6">
+                <label for="equipo_procedencia" class="form-label"
+                  >Equipo de procedencia</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="equipo_procedencia"
+                  placeholder="Equipo de procedencia del Jugador"
+                  required
+                  name="equipo_procedencia"
+                  [(ngModel)]="jugador.equipo_procedencia"
                 />
               </div>
 

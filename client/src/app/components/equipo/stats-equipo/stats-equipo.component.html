@@ -333,6 +333,8 @@
             </div>
           </div>
         </div>
+
+        <div class="flecha-direccion">→</div>
         <!--TABLA MINUTOS JUGADOS-->
         <div class="minutos-container">
           <label for="tipo-minutos"><strong>Minutos Jugados</strong></label>
@@ -526,7 +528,13 @@
 
       <div class="cuadrante3x3">
         <h3>Cuadrantes de Portería</h3>
-        <div class="cuadrante-container">
+        <div
+          class="cuadrante-container"
+          [ngClass]="{
+            'porteria-background': activeTab === 'porteria',
+            'fondo-general': activeTab !== 'porteria'
+          }"
+        >
           <div
             *ngFor="let stat of cuadrantePorteriaStats3x3"
             [class]="'element ' + stat.class"

@@ -37,14 +37,21 @@ const StatSchema = new Schema({
 
 var JugadorSchema = new Schema({
   nombre: { type: String, required: true },
+  alias: { type: String, required: true },
   numero: { type: Number, required: true },
   posicion: { type: String, required: true },
   fecha_nacimiento: { type: Date, required: true },
+  lugar_procedencia: { type: String, required: true },
   edad: { type: Number, required: true },
+  estatura: { type: Number, required: true },
+  peso: { type: Number, required: true },
+  pierna_habil: { type: String, required: true },
+  equipo_procedencia: { type: String, required: true },
   portada: { type: String },
   stats: { type: [StatSchema], default: [] }, // Usa el subesquema
   asignado: { type: Boolean, default: false },
   titular: { type: Boolean, default: false },
+  suplente: { type: Boolean, default: false },
   equipo_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "equipo",

@@ -194,14 +194,13 @@ export class MainComponent implements OnInit {
 
   mostrarDireccion(direccion: string) {
     this.direccion = direccion;
-    console.log('📌 Dirección recibida en el padre:', this.direccion);
+
     this.submitTag();
   }
 
   onNewTag(tag: any): void {
     this.selectedTag = tag;
     this.fieldcomponent.cambiarAImagenCancha();
-    console.log(tag);
   }
 
   onCoordinatesReceived(event: {
@@ -239,7 +238,7 @@ export class MainComponent implements OnInit {
               titular: '',
             },
           },
-      jugador2: this.selectedPlayer2.jugador.nombre
+      jugador2: this.selectedPlayer2?.jugador.nombre
         ? this.selectedPlayer2
         : {
             jugador: {
@@ -300,12 +299,14 @@ export class MainComponent implements OnInit {
 
   onNewPlayer1(player: any): void {
     this.selectedPlayer1 = player;
-    console.log(player);
   }
 
   onNewPlayer2(player: any): void {
     this.selectedPlayer2 = player;
-    console.log(player);
+  }
+
+  onNewPlayerBanca(player: any): void {
+    this.selectedPlayer2 = player;
   }
 
   onDayChanged(day: number) {
@@ -356,6 +357,30 @@ export class MainComponent implements OnInit {
 
   timeChange(event: any) {
     this.time = this.convertToTimeFormat(event.target.value);
+  }
+
+  onKeyDown(event: KeyboardEvent): void {
+    if (
+      event.key === 'Tab' &&
+      (event.target as HTMLInputElement).id === 'tiempo'
+    ) {
+      event.preventDefault(); // Prevenir el salto de foco
+
+      const current = this.convertToTimeFormat(
+        (event.target as HTMLInputElement).value
+      );
+      const [minutesStr, secondsStr] = current.split(':');
+      let minutes = parseInt(minutesStr, 10);
+      const seconds = parseInt(secondsStr, 10);
+
+      minutes += 1;
+
+      const newTime = `${minutes.toString().padStart(2, '0')}:${seconds
+        .toString()
+        .padStart(2, '0')}`;
+      this.time = newTime;
+      (event.target as HTMLInputElement).value = newTime;
+    }
   }
 
   resetTable() {

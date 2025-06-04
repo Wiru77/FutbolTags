@@ -62,48 +62,12 @@ export class CreateJugadorComponent implements OnInit {
   }
 
   registro(registroForm: any) {
-    if (registroForm.valid) {
-      if (!this.file) {
-        // Verifica si no se ha seleccionado un archivo
-        iziToast.show({
-          title: 'ERROR',
-          titleColor: '#FF0000',
-          color: '#FFF',
-          class: 'text-danger',
-          position: 'topRight',
-          message: 'Debes seleccionar una imagen para el jugador',
-        });
-        return; // Detiene el proceso de registro
-      }
+    if (registroForm.invalid) {
+      // 🔴 Marca todos los campos como tocados para mostrar los errores
+      Object.values(registroForm.controls).forEach((control: any) => {
+        control.markAsTouched();
+      });
 
-      console.log('Datos del jugador a enviar:', this.jugador);
-      this._jugadorService
-        .registro_jugador_admin(this.jugador, this.file, this.token)
-        .subscribe(
-          (response: any) => {
-            iziToast.show({
-              title: 'SUCCESS',
-              titleColor: '#1DC74C',
-              color: '#FFF',
-              class: 'text-success',
-              position: 'topRight',
-              message: 'Se registró correctamente el nuevo jugador',
-            });
-            this._router.navigate(['/panel/jugadores']);
-          },
-          (error: any) => {
-            console.log('Error en la petición:', error);
-            iziToast.show({
-              title: 'ERROR',
-              titleColor: '#FF0000',
-              color: '#FFF',
-              class: 'text-danger',
-              position: 'topRight',
-              message: 'Error al registrar el jugador',
-            });
-          }
-        );
-    } else {
       iziToast.show({
         title: 'ERROR',
         titleColor: '#FF0000',
@@ -112,7 +76,48 @@ export class CreateJugadorComponent implements OnInit {
         position: 'topRight',
         message: 'Los datos del formulario no son válidos',
       });
+      return;
     }
+
+    if (!this.file) {
+      iziToast.show({
+        title: 'ERROR',
+        titleColor: '#FF0000',
+        color: '#FFF',
+        class: 'text-danger',
+        position: 'topRight',
+        message: 'Debes seleccionar una imagen para el jugador',
+      });
+      return;
+    }
+
+    console.log('Datos del jugador a enviar:', this.jugador);
+    this._jugadorService
+      .registro_jugador_admin(this.jugador, this.file, this.token)
+      .subscribe(
+        (response: any) => {
+          iziToast.show({
+            title: 'SUCCESS',
+            titleColor: '#1DC74C',
+            color: '#FFF',
+            class: 'text-success',
+            position: 'topRight',
+            message: 'Se registró correctamente el nuevo jugador',
+          });
+          this._router.navigate(['/panel/jugadores']);
+        },
+        (error: any) => {
+          console.log('Error en la petición:', error);
+          iziToast.show({
+            title: 'ERROR',
+            titleColor: '#FF0000',
+            color: '#FFF',
+            class: 'text-danger',
+            position: 'topRight',
+            message: 'Error al registrar el jugador',
+          });
+        }
+      );
   }
 
   fileChangeEvent(event: any): void {

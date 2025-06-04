@@ -4,7 +4,7 @@
 }
 
 .field-container,
-.table-container {
+.right-panel {
   width: 50%;
 }
 
@@ -21,7 +21,11 @@
   gap: 20px;
   justify-content: center;
   font-size: 25px;
-  margin-top: -38px;
+}
+
+.tags-container {
+  margin-top: -500px;
+  background-color: aqua;
 }
 
 #tiempo {

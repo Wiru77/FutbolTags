@@ -145,28 +145,23 @@ const eliminar_equipo_admin = async function (req, res) {
 
 const agregar_jugador_a_equipo = async function (req, res) {
   try {
-    var equipo = await Equipo.findById(req.params.id);
+    const equipo = await Equipo.findById(req.params.id);
     if (!equipo) {
       return res.status(404).json({ message: "Equipo no encontrado" });
     }
 
-    var jugadores = req.body.jugadores_ids;
+    const jugadores = req.body.jugadores_ids;
 
-    for (const elemento of jugadores) {
-      if (!equipo.jugadores_ids.includes(elemento)) {
-        equipo.jugadores_ids.push(elemento);
+    for (const jugadorId of jugadores) {
+      if (!equipo.jugadores_ids.includes(jugadorId)) {
+        equipo.jugadores_ids.push(jugadorId);
       }
 
-      var documento = await Jugador.findById(elemento);
-      if (!documento) {
-        console.log(`Jugador con ID ${elemento} no encontrado`);
-        continue;
-      }
-
-      documento.asignado = true;
-      documento.equipo_id = equipo._id; // Asignar el equipo al jugador
-
-      await documento.save();
+      // ✅ Actualizar jugador sin validar todo el schema
+      await Jugador.findByIdAndUpdate(jugadorId, {
+        asignado: true,
+        equipo_id: equipo._id,
+      });
     }
 
     await equipo.save();
@@ -191,32 +186,24 @@ const listar_jugadores_asignados = async function (req, res) {
 
 const quitar_jugador_del_equipo = async function (req, res) {
   try {
-    var equipo = await Equipo.findById(req.params.id);
+    const equipo = await Equipo.findById(req.params.id);
     if (!equipo) {
       return res.status(404).json({ message: "Equipo no encontrado" });
     }
 
-    var jugadores = req.body.jugadores_ids;
+    const jugadores = req.body.jugadores_ids;
 
-    for (const elemento of jugadores) {
-      console.log(`Eliminando jugador: ${elemento}`);
-
-      // Filtrar al jugador del array de jugadores del equipo
+    for (const jugadorId of jugadores) {
+      // Quitar jugador del arreglo de jugadores_ids
       equipo.jugadores_ids = equipo.jugadores_ids.filter(
-        (id) => id.toString() !== elemento.toString()
+        (id) => id.toString() !== jugadorId.toString()
       );
 
-      // Buscar el jugador y actualizar su estado
-      var documento = await Jugador.findById(elemento);
-      if (!documento) {
-        console.log(`Jugador con ID ${elemento} no encontrado`);
-        continue;
-      }
-
-      documento.asignado = false;
-      documento.equipo_id = null; // Eliminar referencia al equipo
-
-      await documento.save();
+      // ✅ Actualizar directamente el jugador sin validación completa
+      await Jugador.findByIdAndUpdate(jugadorId, {
+        asignado: false,
+        equipo_id: null,
+      });
     }
 
     await equipo.save();
@@ -283,58 +270,64 @@ const agregar_jugador_a_formacion = async (req, res) => {
   try {
     const { equipoId, jugadorId } = req.body;
 
-    // Buscar equipo
     let equipo = await Equipo.findById(equipoId);
     if (!equipo) {
       return res.status(404).json({ message: "Equipo no encontrado." });
     }
 
-    // Verificar si el jugador está asignado al equipo
-    const jugadorAsignado = equipo.jugadores_ids.includes(jugadorId);
+    const jugadorAsignado = equipo.jugadores_ids.some(
+      (id) => id.toString() === jugadorId.toString()
+    );
     if (!jugadorAsignado) {
       return res
         .status(400)
         .json({ message: "El jugador no pertenece al equipo." });
     }
 
-    // Verificar si el jugador ya está en la formación
-    if (equipo.formacion.includes(jugadorId)) {
+    const yaEnFormacion = equipo.formacion.some(
+      (id) => id.toString() === jugadorId.toString()
+    );
+    if (yaEnFormacion) {
       return res
         .status(400)
         .json({ message: "El jugador ya está en la formación." });
     }
 
-    // Verificar si ya hay 11 jugadores en la formación
-    if (equipo.formacion.length >= 11) {
-      return res
-        .status(400)
-        .json({ message: "La formación ya tiene 11 jugadores." });
+    const yaEnBanca = equipo.banca.some(
+      (id) => id.toString() === jugadorId.toString()
+    );
+    if (yaEnBanca) {
+      return res.status(400).json({
+        message: "El jugador está en la banca y no puede ser titular.",
+      });
     }
 
-    // Actualizar el jugador a titular: true
-    await Jugador.findByIdAndUpdate(jugadorId, { titular: true });
+    await Jugador.findByIdAndUpdate(jugadorId, {
+      titular: true,
+      suplente: false,
+    });
 
-    // Agregar jugador a formación
     equipo.formacion.push(jugadorId);
     await equipo.save();
 
-    equipo = await Equipo.findById(equipoId).populate("formacion");
-
-    const banca = await Equipo.findById(equipoId).populate("jugadores_ids");
-
-    // Filtrar jugadores de banca (titular: false)
-    const jugadores_banca = banca.jugadores_ids.filter(
-      (jugador) => jugador.titular === false
+    const equipoActualizado = await Equipo.findById(equipoId).populate(
+      "formacion"
     );
 
-    res.status(200).json({
+    // ✅ Obtener jugadores de la banca
+    const jugadores_banca = await Jugador.find({
+      _id: { $in: equipo.banca },
+    });
+
+    return res.status(200).json({
       message: "Jugador agregado a la formación exitosamente.",
-      equipo,
-      jugadores_banca,
+      equipo: equipoActualizado,
+      titulares: equipoActualizado.formacion,
+      jugadores_banca, // 🔥 agregado aquí
     });
   } catch (error) {
-    console.error(error);
-    res
+    console.error("Error al agregar jugador a la formación:", error);
+    return res
       .status(500)
       .json({ message: "Error al agregar jugador a la formación." });
   }
@@ -359,30 +352,23 @@ const listar_jugadores_formacion = async function (req, res) {
 
 const quitar_jugador_de_formacion = async function (req, res) {
   try {
-    var equipo = await Equipo.findById(req.params.id);
+    const equipo = await Equipo.findById(req.params.id);
     if (!equipo) {
       return res.status(404).json({ message: "Equipo no encontrado" });
     }
 
-    var jugadores = req.body.jugadores_ids;
+    const jugadores = req.body.jugadores_ids;
 
-    for (const elemento of jugadores) {
-      // Filtrar al jugador del array de jugadores del equipo
+    for (const jugadorId of jugadores) {
+      // Quitar el jugador de la formación del equipo
       equipo.formacion = equipo.formacion.filter(
-        (id) => id.toString() !== elemento.toString()
+        (id) => id.toString() !== jugadorId.toString()
       );
 
-      // Buscar el jugador y actualizar su estado
-      var documento = await Jugador.findById(elemento);
-      if (!documento) {
-        console.log(`Jugador con ID ${elemento} no encontrado`);
-        continue;
-      }
-
-      documento.titular = false;
-      documento.equipo_id = null; // Eliminar referencia al equipo
-
-      await documento.save();
+      // Actualizar directamente el jugador sin validación completa
+      await Jugador.findByIdAndUpdate(jugadorId, {
+        titular: false,
+      });
     }
 
     await equipo.save();
@@ -408,7 +394,7 @@ const listar_jugadores_banca = async function (req, res) {
 
     // Filtrar jugadores de banca (titular: false)
     const jugadores_banca = equipo.jugadores_ids.filter(
-      (jugador) => jugador.titular === false
+      (jugador) => jugador.suplente === true
     );
 
     res.status(200).send({
@@ -417,6 +403,98 @@ const listar_jugadores_banca = async function (req, res) {
   } catch (error) {
     console.error("Error al listar jugadores de la banca:", error);
     res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+const agregar_jugador_a_banca = async (req, res) => {
+  try {
+    const { equipoId, jugadorId } = req.body;
+
+    let equipo = await Equipo.findById(equipoId);
+    if (!equipo) {
+      return res.status(404).json({ message: "Equipo no encontrado." });
+    }
+
+    const jugadorAsignado = equipo.jugadores_ids.some(
+      (id) => id.toString() === jugadorId.toString()
+    );
+    if (!jugadorAsignado) {
+      return res
+        .status(400)
+        .json({ message: "El jugador no pertenece al equipo." });
+    }
+
+    const yaEnBanca = equipo.banca.some(
+      (id) => id.toString() === jugadorId.toString()
+    );
+    if (yaEnBanca) {
+      return res
+        .status(400)
+        .json({ message: "El jugador ya está en la banca." });
+    }
+
+    const yaEnFormacion = equipo.formacion.some(
+      (id) => id.toString() === jugadorId.toString()
+    );
+    if (yaEnFormacion) {
+      return res.status(400).json({
+        message: "El jugador está en la formación y no puede ser suplente.",
+      });
+    }
+
+    await Jugador.findByIdAndUpdate(jugadorId, {
+      suplente: true,
+      titular: false,
+    });
+
+    equipo.banca.push(jugadorId);
+    await equipo.save();
+
+    const equipoActualizado = await Equipo.findById(equipoId).populate("banca");
+
+    return res.status(200).json({
+      message: "Jugador agregado a la banca exitosamente.",
+      equipo: equipoActualizado,
+      jugadores_banca: equipoActualizado.banca,
+    });
+  } catch (error) {
+    console.error("Error al agregar jugador a la banca:", error);
+    return res
+      .status(500)
+      .json({ message: "Error al agregar jugador a la banca." });
+  }
+};
+
+const quitar_jugador_de_banca = async function (req, res) {
+  try {
+    const equipo = await Equipo.findById(req.params.id);
+    if (!equipo) {
+      return res.status(404).json({ message: "Equipo no encontrado" });
+    }
+
+    const jugadores = req.body.jugadores_ids;
+
+    for (const jugadorId of jugadores) {
+      // Quitar de la banca
+      equipo.banca = equipo.banca.filter(
+        (id) => id.toString() !== jugadorId.toString()
+      );
+
+      // Actualizar: solo dejar de ser suplente, pero no eliminar el equipo
+      await Jugador.findByIdAndUpdate(jugadorId, {
+        suplente: false,
+        // Mantenemos equipo_id, porque el jugador sigue perteneciendo al equipo
+      });
+    }
+
+    await equipo.save();
+
+    return res.status(200).json({
+      message: "Jugador removido de la banca correctamente",
+    });
+  } catch (error) {
+    console.error("Error al eliminar jugadores de la banca:", error);
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 
@@ -436,4 +514,6 @@ module.exports = {
   listar_jugadores_formacion,
   quitar_jugador_de_formacion,
   listar_jugadores_banca,
+  agregar_jugador_a_banca,
+  quitar_jugador_de_banca,
 };

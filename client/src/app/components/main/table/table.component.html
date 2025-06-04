@@ -1,12 +1,3 @@
-<div>
-  <button data-bs-toggle="modal" data-bs-target="#resetTable" tabindex="-1">
-    Restablecer tabla
-  </button>
-  <button data-bs-toggle="modal" data-bs-target="#guardarStats">
-    Terminar Partido
-  </button>
-  <!-- Bot¿on para abrir el Modal de confirmación -->
-</div>
 <div class="table-container">
   <table>
     <thead>
@@ -34,16 +25,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let data of dataList; let i = index">
+      <tr *ngFor="let data of reversedDataList; let i = index">
         <!-- <td>{{ data.localia }}</td>
          <td>{{ data.jornada }}</td>
         <td>{{ data.torneo }}</td>
         <td>{{ data.rival }}</td> -->
 
         <td>{{ nombreEquipo }}</td>
-        <td>{{ data.jugador1.jugador?.nombre || "" }}</td>
+        <td>{{ data.jugador1.jugador?.alias || "" }}</td>
         <td>{{ data.tag?.nombre || "-" }}</td>
-        <td>{{ data.jugador2.jugador?.nombre || "" }}</td>
+        <td>{{ data.jugador2.jugador?.alias || "" }}</td>
         <td>{{ data.time }}</td>
         <td>{{ data.tag?.tendencia === true ? data.direccion : "" }}</td>
         <td>{{ data.startX }}</td>
@@ -52,10 +43,19 @@
         <td>{{ data.endY }}</td>
         <td>{{ data.porteriaX }}</td>
         <td>{{ data.porteriaY }}</td>
-        <td><span (click)="removeRow(i)" class="delete-btn">X</span></td>
+        <td><span (click)="removeRow(data)" class="delete-btn">X</span></td>
       </tr>
     </tbody>
   </table>
+</div>
+<div>
+  <button data-bs-toggle="modal" data-bs-target="#resetTable" tabindex="-1">
+    Restablecer tabla
+  </button>
+  <button data-bs-toggle="modal" data-bs-target="#guardarStats">
+    Terminar Partido
+  </button>
+  <!-- Bot¿on para abrir el Modal de confirmación -->
 </div>
 
 <!-- Modal de confirmación TERMINAR -->

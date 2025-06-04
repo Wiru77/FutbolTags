@@ -13,6 +13,7 @@ import { TagService } from '../../../services/tag.service';
 import { RouterModule } from '@angular/router';
 import * as XLSX from 'xlsx';
 import { AdminService } from '../../../services/admin.service';
+import { log } from 'node:console';
 declare var iziToast: any;
 declare var bootstrap: any;
 
@@ -27,6 +28,7 @@ export class TagsComponent implements OnInit {
   @Output() public onNewTag: EventEmitter<any> = new EventEmitter();
   @Output() public onNewPlayer: EventEmitter<any> = new EventEmitter();
   @Output() public onNewPlayer2: EventEmitter<any> = new EventEmitter();
+  @Output() public onNewPlayerBanca: EventEmitter<any> = new EventEmitter();
   @Output() public onDayChanged: EventEmitter<any> = new EventEmitter();
   @Output() public onTeamSelected: EventEmitter<any> = new EventEmitter();
 
@@ -47,10 +49,12 @@ export class TagsComponent implements OnInit {
 
   public previousButton: any = null;
   public previousButtonRight: any = null;
+  public previousButtonBanca: any = null;
   public previousButtonTag: any = null;
   public editMode: boolean = false;
   public selectedPlayer: any = {};
   public selectedPlayer2: any = {};
+  public selectedPlayerBanca: any = {};
   public selectedTag: any = {};
   public tags: any[] = [];
   public equipos: Array<any> = [];
@@ -64,6 +68,7 @@ export class TagsComponent implements OnInit {
   public tiempoCambio: any;
   public jugadoresEntran: any[] = [];
   public jugadoresSalen: any[] = [];
+  public suplentes: any[] = [];
 
   public equipo1: any = [{ equipo: 'Local' }];
 
@@ -113,6 +118,21 @@ export class TagsComponent implements OnInit {
       }
     );
 
+    // Obtener jugadores de la banca
+    this._equipoService.listar_jugadores_banca(this.equipoId).subscribe(
+      (response) => {
+        this.banca = Array.isArray(response.jugadores_banca)
+          ? response.jugadores_banca
+          : [];
+        this.filteredBanca = [...this.banca];
+        console.log(this.filteredBanca, 'banquiux');
+      },
+      (error) => {
+        console.error('Error al obtener los jugadores de la banca:', error);
+        this.banca = []; // prevenir errores de iteración
+      }
+    );
+
     // Obtener los tags
 
     this._tagService.listar_tags_filtro_admin(this.token).subscribe(
@@ -123,7 +143,7 @@ export class TagsComponent implements OnInit {
           (tag) => tag.porteria
         );
         this.filteredTagsWithOfensivo = this.filteredTags.filter(
-          (tag) => tag.tipo === 'Ofensivo' && !tag.porteria
+          (tag) => tag.tipo === 'Ofensivo' || tag.porteria
         );
         this.filteredTagsWithDefensivo = this.filteredTags.filter(
           (tag) => tag.tipo === 'Defensivo' && !tag.porteria
@@ -186,7 +206,6 @@ export class TagsComponent implements OnInit {
     this.selectedTag = tag;
 
     this.onNewTag.emit(this.selectedTag);
-    console.log(this.selectedTag);
 
     let selectedButtonTag = document.getElementById(tag.nombre);
 
@@ -242,6 +261,7 @@ export class TagsComponent implements OnInit {
         localty: localty,
         jugador: {
           nombre: jugador.nombre || '',
+          alias: jugador.alias || '',
           numero: jugador.numero || '',
           posicion: jugador.posicion || '',
           edad: jugador.edad || '',
@@ -263,49 +283,101 @@ export class TagsComponent implements OnInit {
   }
 
   playerSelect2(event: any, equipo: any, jugador: any, i: any, localty: any) {
-    let test = this._adminService.getIdUsuario();
-
     event.preventDefault();
 
-    let selectedButtonRight = document.getElementById(localty + i);
+    const selectedButtonRight = document.getElementById(localty + i);
 
-    if (selectedButtonRight?.classList.contains('active_button')) {
+    if (!selectedButtonRight) return;
+
+    // Si ya estaba seleccionado, lo deseleccionamos
+    if (selectedButtonRight.classList.contains('active_button_right')) {
+      selectedButtonRight.classList.remove('active_button_right');
+      this.selectedPlayer2 = null;
+      this.onNewPlayer2.emit(this.selectedPlayer2);
+      this.previousButtonRight = null;
       return;
     }
 
-    if (selectedButtonRight?.classList.contains('active_button_right')) {
-      selectedButtonRight.classList.remove('active_button_right');
-
-      this.selectedPlayer2 = null;
-      this.onNewPlayer2.emit(this.selectedPlayer2);
-
-      this.previousButtonRight = null;
-    } else {
-      if (this.previousButtonRight) {
-        this.previousButtonRight.classList.remove('active_button_right');
-      }
-
-      selectedButtonRight?.classList.add('active_button_right');
-
-      this.selectedPlayer2 = {
-        equipo: this.selectedTeam2,
-        localty: localty,
-        jugador: {
-          nombre: jugador.nombre || '',
-          numero: jugador.numero || '',
-          posicion: jugador.posicion || '',
-          edad: jugador.edad || '',
-          _id: jugador._id || '',
-          equipo_id: this.equipoId || '',
-          titular: jugador.titular === true,
-        },
-        index: i,
-      };
-
-      this.onNewPlayer2.emit(this.selectedPlayer2);
-
-      this.previousButtonRight = selectedButtonRight;
+    // Si hay un jugador previamente seleccionado, deseleccionarlo
+    if (this.previousButtonRight) {
+      this.previousButtonRight.classList.remove('active_button_right');
     }
+
+    selectedButtonRight.classList.add('active_button_right');
+    this.previousButtonRight = selectedButtonRight;
+
+    this.selectedPlayer2 = {
+      equipo: this.selectedTeam2,
+      localty: localty,
+      jugador: {
+        nombre: jugador.nombre || '',
+        alias: jugador.alias || '',
+        numero: jugador.numero || '',
+        posicion: jugador.posicion || '',
+        edad: jugador.edad || '',
+        _id: jugador._id || '',
+        equipo_id: this.equipoId || '',
+        titular: jugador.titular === true,
+        suplente: jugador.suplente === true,
+      },
+      index: i,
+    };
+
+    this.onNewPlayer2.emit(this.selectedPlayer2);
+
+    this.filterPlayerText = '';
+    this.filteredTeam1 = this.equipo1;
+    this.filteredTeam2 = this.equipo2;
+  }
+
+  playerSelectBanca(
+    event: any,
+    equipo: any,
+    jugador: any,
+    i: any,
+    localty: any
+  ) {
+    event.preventDefault();
+
+    const selectedButtonBanca = document.getElementById(localty + i);
+
+    if (!selectedButtonBanca) return;
+
+    // Si ya estaba seleccionado, lo deseleccionamos
+    if (selectedButtonBanca.classList.contains('active_button_banca')) {
+      selectedButtonBanca.classList.remove('active_button_banca');
+      this.selectedPlayerBanca = null;
+      this.onNewPlayerBanca.emit(this.selectedPlayerBanca);
+      this.previousButtonBanca = null;
+      return;
+    }
+
+    // Si hay un jugador previamente seleccionado, deseleccionarlo
+    if (this.previousButtonBanca) {
+      this.previousButtonBanca.classList.remove('active_button_banca');
+    }
+
+    selectedButtonBanca.classList.add('active_button_banca');
+    this.previousButtonBanca = selectedButtonBanca;
+
+    this.selectedPlayerBanca = {
+      equipo: this.selectedTeam2,
+      localty: localty,
+      jugador: {
+        nombre: jugador.nombre || '',
+        alias: jugador.alias || '',
+        numero: jugador.numero || '',
+        posicion: jugador.posicion || '',
+        edad: jugador.edad || '',
+        _id: jugador._id || '',
+        equipo_id: this.equipoId || '',
+        titular: jugador.titular === true,
+        suplente: jugador.suplente === true,
+      },
+      index: i,
+    };
+
+    this.onNewPlayerBanca.emit(this.selectedPlayerBanca);
 
     this.filterPlayerText = '';
     this.filteredTeam1 = this.equipo1;
@@ -363,14 +435,15 @@ export class TagsComponent implements OnInit {
   selectBancaTeam(id: any) {
     this._equipoService.listar_jugadores_banca(id).subscribe(
       (response) => {
-        if (response && response.jugadores_banca) {
-          this.banca = response.jugadores_banca;
-          this.filteredBanca = [...this.banca];
-        }
-        console.log('banca', this.banca);
+        this.banca = Array.isArray(response.jugadores_banca)
+          ? response.jugadores_banca
+          : [];
+        this.filteredBanca = [...this.banca];
       },
       (error) => {
         console.error('Error al obtener los jugadores de la banca:', error);
+        this.banca = [];
+        this.filteredBanca = [];
       }
     );
   }
@@ -418,8 +491,8 @@ export class TagsComponent implements OnInit {
   }
 
   cambiarJugadores(): void {
-    const jugador1 = this.selectedPlayer.jugador;
-    const jugador2 = this.selectedPlayer2.jugador;
+    const jugador1 = this.selectedPlayer.jugador; // Titular que va a salir
+    const jugador2 = this.selectedPlayerBanca.jugador; // Suplente que va a entrar
 
     // Validación de existencia de jugadores válidos
     if (!jugador1?._id || !jugador2?._id) {
@@ -432,29 +505,25 @@ export class TagsComponent implements OnInit {
       return;
     }
 
-    // Validar que jugador1 (el que va a entrar) no haya salido antes
+    // Validar que jugador1 (el que sale) no haya salido antes
     const cambiosAnteriores = JSON.parse(
       localStorage.getItem('cambios') || '[]'
     );
     const yaEntro = cambiosAnteriores.some(
       (cambio: any) => cambio.entra._id === jugador1._id
     );
-
     if (yaEntro) {
       iziToast.error({
         title: 'ERROR',
-        message: 'Este jugador ya entro y no puede volver a salir.',
+        message: 'Este jugador ya entró y no puede volver a salir.',
         position: 'topRight',
       });
       return;
     }
 
-    // Validar que jugador2 (el que va a entrar) no haya salido antes
-
     const yaSalio = cambiosAnteriores.some(
       (cambio: any) => cambio.sale._id === jugador2._id
     );
-
     if (yaSalio) {
       iziToast.error({
         title: 'ERROR',
@@ -465,100 +534,128 @@ export class TagsComponent implements OnInit {
     }
 
     if (jugador1?.titular === true && jugador2?.titular === false) {
+      // 1. Quitar jugador1 de formación
+      // 1. Quitar jugador1 de formación
       this._equipoService
         .quitar_jugador_de_formacion(this.equipoId, jugador1._id, this.token)
         .subscribe(
-          (response1: any) => {
-            iziToast.show({
-              title: 'SUCCESS',
-              titleColor: '#1DC74C',
-              color: '#FFF',
-              class: 'text-success',
-              position: 'topRight',
-              message: 'Jugador 1 removido de la titularidad',
-            });
-
+          () => {
+            // 2. Quitar jugador2 de banca
             this._equipoService
-              .agregar_jugador_a_formacion(
-                this.equipoId,
-                jugador2._id,
-                this.token
-              )
+              .quitar_jugador_de_banca(this.equipoId, jugador2._id, this.token)
               .subscribe(
-                (response2: any) => {
-                  iziToast.show({
-                    title: 'SUCCESS',
-                    titleColor: '#1DC74C',
-                    color: '#FFF',
-                    class: 'text-success',
-                    position: 'topRight',
-                    message: 'Jugador 2 agregado a la titularidad',
-                  });
+                () => {
+                  // ✅ 2.5. Agregar jugador1 a la banca
+                  this._equipoService
+                    .agregar_jugador_a_banca(
+                      this.equipoId,
+                      jugador1._id,
+                      this.token
+                    )
+                    .subscribe(
+                      () => {
+                        // 3. Agregar jugador2 a formación
+                        this._equipoService
+                          .agregar_jugador_a_formacion(
+                            this.equipoId,
+                            jugador2._id,
+                            this.token
+                          )
+                          .subscribe(
+                            (response2: any) => {
+                              // Aquí ya todo salió bien
+                              iziToast.success({
+                                title: 'CAMBIO',
+                                message: 'Cambio realizado correctamente',
+                                position: 'topRight',
+                              });
 
-                  // ✅ Guardar cambio en localStorage
-                  const nuevoCambio = {
-                    entra: jugador2,
-                    sale: jugador1,
-                    minutos_jugados_sale: this.tiempoCambio,
-                    minutos_jugados_entra: 90 - this.tiempoCambio,
-                    tiempo_cambio: this.tiempoCambio,
-                  };
+                              const nuevoCambio = {
+                                entra: jugador2,
+                                sale: jugador1,
+                                minutos_jugados_sale: this.tiempoCambio,
+                                minutos_jugados_entra: 90 - this.tiempoCambio,
+                                tiempo_cambio: this.tiempoCambio,
+                              };
 
-                  cambiosAnteriores.push(nuevoCambio);
-                  localStorage.setItem(
-                    'cambios',
-                    JSON.stringify(cambiosAnteriores)
-                  );
+                              cambiosAnteriores.push(nuevoCambio);
+                              localStorage.setItem(
+                                'cambios',
+                                JSON.stringify(cambiosAnteriores)
+                              );
 
-                  this.equipo1 = response2.equipo.formacion;
-                  this.filteredTeam1 = [...this.equipo1];
-                  this.banca = response2.jugadores_banca;
-                  this.filteredBanca = [...this.banca];
+                              this.equipo1 = response2.equipo.formacion;
+                              this.filteredTeam1 = [...this.equipo1];
+                              this.banca = response2.jugadores_banca;
+                              this.filteredBanca = [...this.banca];
 
-                  const cambiosStorage = JSON.parse(
-                    localStorage.getItem('cambios') || '[]'
-                  );
-                  this.jugadoresEntran = cambiosStorage.map((cambio: any) => ({
-                    ...cambio.entra,
-                    tiempo_cambio: cambio.tiempo_cambio,
-                  }));
-                  this.jugadoresSalen = cambiosStorage.map(
-                    (cambio: any) => cambio.sale
-                  );
+                              const cambiosStorage = JSON.parse(
+                                localStorage.getItem('cambios') || '[]'
+                              );
+                              this.jugadoresEntran = cambiosStorage.map(
+                                (cambio: any) => ({
+                                  ...cambio.entra,
+                                  tiempo_cambio: cambio.tiempo_cambio,
+                                })
+                              );
+                              this.jugadoresSalen = cambiosStorage.map(
+                                (cambio: any) => cambio.sale
+                              );
+                            },
+                            (error2: any) => {
+                              console.error(
+                                'Error al agregar jugador 2:',
+                                error2
+                              );
+                              iziToast.error({
+                                title: 'ERROR',
+                                message:
+                                  'Error al agregar jugador 2 a formación',
+                                position: 'topRight',
+                              });
+                            }
+                          );
+                      },
+                      (errorAgregarBanca) => {
+                        console.error(
+                          'Error al agregar jugador1 a banca:',
+                          errorAgregarBanca
+                        );
+                        iziToast.error({
+                          title: 'ERROR',
+                          message: 'Error al mover jugador titular a la banca',
+                          position: 'topRight',
+                        });
+                      }
+                    );
                 },
-                (error2: any) => {
-                  console.error('Error al agregar jugador 2:', error2);
-                  iziToast.show({
+                (errorBanca) => {
+                  console.error(
+                    'Error al quitar jugador de la banca:',
+                    errorBanca
+                  );
+                  iziToast.error({
                     title: 'ERROR',
-                    titleColor: '#FF0000',
-                    color: '#FFF',
-                    class: 'text-danger',
+                    message: 'Error al quitar jugador de la banca',
                     position: 'topRight',
-                    message: 'Error al agregar al jugador 2 a la titularidad',
                   });
                 }
               );
           },
           (error1: any) => {
             console.error('Error al quitar jugador 1:', error1);
-            iziToast.show({
+            iziToast.error({
               title: 'ERROR',
-              titleColor: '#FF0000',
-              color: '#FFF',
-              class: 'text-danger',
+              message: 'Error al quitar jugador titular',
               position: 'topRight',
-              message: 'Error al remover al jugador 1 de la titularidad',
             });
           }
         );
     } else {
-      iziToast.show({
+      iziToast.error({
         title: 'ERROR',
-        titleColor: '#FF0000',
-        color: '#FFF',
-        class: 'text-danger',
-        position: 'topRight',
         message: 'No se cumplen las condiciones para realizar un cambio',
+        position: 'topRight',
       });
     }
   }
@@ -588,20 +685,109 @@ export class TagsComponent implements OnInit {
   }
 
   eliminarCambio(index: number): void {
-    // Obtener los cambios del localStorage
     const cambios = JSON.parse(localStorage.getItem('cambios') || '[]');
+    const cambioAEliminar = cambios[index];
 
-    // Quitar el cambio en la posición `index`
-    cambios.splice(index, 1);
+    const jugadorQueEntra = cambioAEliminar.entra;
+    const jugadorQueSale = cambioAEliminar.sale;
 
-    // Guardar el nuevo arreglo actualizado
-    localStorage.setItem('cambios', JSON.stringify(cambios));
+    // 1. Quitar al jugador que entró de formación
+    this._equipoService
+      .quitar_jugador_de_formacion(
+        this.equipoId,
+        jugadorQueEntra._id,
+        this.token
+      )
+      .subscribe(
+        () => {
+          // 2. Quitar al jugador que salió de la banca
+          this._equipoService
+            .quitar_jugador_de_banca(
+              this.equipoId,
+              jugadorQueSale._id,
+              this.token
+            )
+            .subscribe(
+              () => {
+                // 3. Reagregar al jugador que salió a la formación
+                this._equipoService
+                  .agregar_jugador_a_formacion(
+                    this.equipoId,
+                    jugadorQueSale._id,
+                    this.token
+                  )
+                  .subscribe(
+                    () => {
+                      // 4. Reagregar al jugador que entró a la banca
+                      this._equipoService
+                        .agregar_jugador_a_banca(
+                          this.equipoId,
+                          jugadorQueEntra._id,
+                          this.token
+                        )
+                        .subscribe(
+                          () => {
+                            // 5. Eliminar el cambio del arreglo y actualizar storage
+                            cambios.splice(index, 1);
+                            localStorage.setItem(
+                              'cambios',
+                              JSON.stringify(cambios)
+                            );
 
-    // Actualizar el front
-    this.jugadoresEntran = cambios.map((cambio: any) => ({
-      ...cambio.entra,
-      tiempo_cambio: cambio.tiempo_cambio,
-    }));
-    this.jugadoresSalen = cambios.map((cambio: any) => cambio.sale);
+                            // 6. Actualizar listas en el front
+                            this.jugadoresEntran = cambios.map(
+                              (cambio: any) => ({
+                                ...cambio.entra,
+                                tiempo_cambio: cambio.tiempo_cambio,
+                              })
+                            );
+                            this.jugadoresSalen = cambios.map(
+                              (cambio: any) => cambio.sale
+                            );
+
+                            window.location.reload();
+
+                            // 7. Refrescar formación y banca en pantalla
+                            this._equipoService
+                              .obtener_equipo_admin(this.equipoId, this.token)
+                              .subscribe((response: any) => {
+                                this.equipo1 = response.equipo.formacion;
+                                this.filteredTeam1 = [...this.equipo1];
+                                this.banca = response.jugadores_banca;
+                                this.filteredBanca = [...this.banca];
+                              });
+
+                            if (!this.equipoId) {
+                              console.error('Error: equipoId no definido');
+                              return;
+                            }
+
+                            iziToast.success({
+                              title: 'Reversión de cambio',
+                              message:
+                                'El cambio fue eliminado y los jugadores restaurados',
+                              position: 'topRight',
+                            });
+                          },
+                          (err) =>
+                            this.mensajeError('al agregar jugador a banca')
+                        );
+                    },
+                    (err) => this.mensajeError('al agregar jugador a formación')
+                  );
+              },
+              (err) => this.mensajeError('al quitar jugador de la banca')
+            );
+        },
+        (err) => this.mensajeError('al quitar jugador de formación')
+      );
+  }
+
+  mensajeError(accion: string): void {
+    iziToast.error({
+      title: 'ERROR',
+      message: `Error ${accion}`,
+      position: 'topRight',
+    });
   }
 }

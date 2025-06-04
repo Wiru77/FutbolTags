@@ -132,9 +132,16 @@ const actualizar_jugador_admin = async function (req, res) {
         id,
         {
           nombre: data.nombre,
+          alias: data.alias,
           numero: data.numero,
           posicion: data.posicion,
+          fecha_nacimiento: data.fecha_nacimiento,
+          lugar_procedencia: data.lugar_procedencia,
           edad: data.edad,
+          estatura: data.estatura,
+          peso: data.peso,
+          pierna_habil: data.pierna_habil,
+          equipo_procedencia: data.equipo_procedencia,
           equipo_id: data.equipo_id || null,
           asignado: data.asignado, // Asegurarse de que se marque como asignado o no
         },
@@ -245,78 +252,109 @@ const registro_stats = async function (req, res) {
 
 const registro_minutos_jugados = async function (req, res) {
   try {
-    const {
-      cambios,
-      torneo,
-      localia,
-      jornada,
-      rival, // Asegúrate de que este campo esté incluido en el `req.body`
-    } = req.body;
+    const { cambios, torneo, localia, jornada, rival, tiempo, equipo_id } =
+      req.body;
 
-    // Obtener IDs de jugadores que entran y salen
-    const idsCambio = new Set();
-    for (let cambio of cambios) {
-      idsCambio.add(String(cambio.entra._id));
-      idsCambio.add(String(cambio.sale._id));
+    const equipoId = cambios[0]?.entra?.equipo_id ?? equipo_id ?? null;
+
+    if (!equipoId) {
+      return res.status(400).send({
+        message: "No se proporcionó equipo_id ni cambios válidos.",
+      });
     }
 
-    // Asumimos que el primer jugador tiene el equipo_id correcto
-    const equipoId = cambios[0]?.entra?.equipo_id;
-
-    // Obtener jugadores de la formación
     const equipo = await Equipo.findById(equipoId).populate("formacion");
-    if (equipo && equipo.formacion) {
-      // Aumentar 90 minutos a los jugadores que NO están en los cambios
-      for (let jugador of equipo.formacion) {
-        const jugadorId = String(jugador._id);
-        if (!idsCambio.has(jugadorId)) {
-          const jugadorDB = await Jugador.findById(jugadorId);
-          if (jugadorDB) {
-            jugadorDB.stats.push({
-              evento: { nombre: "Minutos por formación" },
-              minutos_jugados: 90,
-              torneo,
-              localia,
-              jornada,
-              rival,
-            });
-            await jugadorDB.save();
-          }
+    if (!equipo || !equipo.formacion) {
+      return res.status(404).send({
+        message: "No se encontró la formación del equipo.",
+      });
+    }
+
+    const idsCambio = new Set();
+    if (Array.isArray(cambios) && cambios.length > 0) {
+      for (let cambio of cambios) {
+        idsCambio.add(String(cambio.entra._id));
+        idsCambio.add(String(cambio.sale._id));
+      }
+    }
+
+    const todosJugaron90 = !cambios || cambios.length === 0;
+
+    for (let jugador of equipo.formacion) {
+      const jugadorId = String(jugador._id);
+
+      // Si no hay cambios, todos juegan 90; si hay, solo los no involucrados
+      if (todosJugaron90 || !idsCambio.has(jugadorId)) {
+        const jugadorDB = await Jugador.findById(jugadorId);
+        if (jugadorDB) {
+          jugadorDB.stats.push({
+            evento: {
+              nombre: "Minutos por formación",
+              efectividad: false,
+              balon_parado: false,
+              tendencia: false,
+              asociacion: false,
+              porteria: false,
+            },
+            minutos_jugados: 90,
+            torneo,
+            localia,
+            jornada,
+            rival,
+            tiempo: tiempo ?? null,
+          });
+          await jugadorDB.save();
         }
       }
-    } else {
-      console.log("No se encontró la formación del equipo");
     }
 
-    // Registrar cambios de entrada y salida
-    for (let cambio of cambios) {
-      const { entra, sale, minutos_jugados_entra, minutos_jugados_sale } =
-        cambio;
+    // Si hay cambios, registra minutos específicos para entra y sale
+    if (cambios && cambios.length > 0) {
+      for (let cambio of cambios) {
+        const { entra, sale, minutos_jugados_entra, minutos_jugados_sale } =
+          cambio;
 
-      const jugadorEntra = await Jugador.findById(entra._id);
-      if (jugadorEntra) {
-        jugadorEntra.stats.push({
-          evento: { nombre: "Cambio - Entra" },
-          minutos_jugados: minutos_jugados_entra,
-          torneo,
-          localia,
-          jornada,
-          rival,
-        });
-        await jugadorEntra.save();
-      }
+        const jugadorEntra = await Jugador.findById(entra._id);
+        if (jugadorEntra) {
+          jugadorEntra.stats.push({
+            evento: {
+              nombre: "Cambio - Entra",
+              efectividad: false,
+              balon_parado: false,
+              tendencia: false,
+              asociacion: false,
+              porteria: false,
+            },
+            minutos_jugados: minutos_jugados_entra,
+            torneo,
+            localia,
+            jornada,
+            rival,
+            tiempo: tiempo ?? null,
+          });
+          await jugadorEntra.save();
+        }
 
-      const jugadorSale = await Jugador.findById(sale._id);
-      if (jugadorSale) {
-        jugadorSale.stats.push({
-          evento: { nombre: "Cambio - Sale" },
-          minutos_jugados: minutos_jugados_sale,
-          torneo,
-          localia,
-          jornada,
-          rival,
-        });
-        await jugadorSale.save();
+        const jugadorSale = await Jugador.findById(sale._id);
+        if (jugadorSale) {
+          jugadorSale.stats.push({
+            evento: {
+              nombre: "Cambio - Sale",
+              efectividad: false,
+              balon_parado: false,
+              tendencia: false,
+              asociacion: false,
+              porteria: false,
+            },
+            minutos_jugados: minutos_jugados_sale,
+            torneo,
+            localia,
+            jornada,
+            rival,
+            tiempo: tiempo ?? null,
+          });
+          await jugadorSale.save();
+        }
       }
     }
 
