@@ -85,6 +85,7 @@ export class FieldComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     const invertirXStorage = localStorage.getItem('invertirX');
     this.invertirX = invertirXStorage ? JSON.parse(invertirXStorage) : false;
+    this.cargarAngulosDesdeStorage();
   }
 
   ngAfterViewInit() {
@@ -499,5 +500,19 @@ export class FieldComponent implements OnInit, AfterViewInit {
       position: 'topRight',
       message: 'Se guardaron correctamente los nuevos ángulos de dirección',
     });
+  }
+
+  cargarAngulosDesdeStorage(): void {
+    const datos = localStorage.getItem('angulosData');
+    if (datos) {
+      const { angulo1, angulo2 } = JSON.parse(datos);
+      this.angulo1 = angulo1;
+      this.angulo2 = angulo2;
+      this.actualizarFlechas(); // Aplica la rotación
+    } else {
+      this.angulo1 = 0;
+      this.angulo2 = 0;
+      this.actualizarFlechas();
+    }
   }
 }

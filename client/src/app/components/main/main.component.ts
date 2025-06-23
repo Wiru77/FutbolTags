@@ -67,6 +67,7 @@ export class MainComponent implements OnInit {
   public equipo: any;
   public customJornada: any;
   public equipoId: any;
+  public tiempoPartido: any;
 
   constructor(
     private _equipoService: EquipoService,
@@ -82,6 +83,10 @@ export class MainComponent implements OnInit {
     const eventosStorage = JSON.parse(
       localStorage.getItem('eventosData') || '{}'
     );
+    const savedTime = localStorage.getItem('tiempoPartido');
+    if (savedTime) {
+      this.tiempoPartido = savedTime;
+    }
 
     if (partidoStorage) {
       this.selectedTorneo = partidoStorage.torneo || '';
@@ -118,11 +123,16 @@ export class MainComponent implements OnInit {
   }
 
   confirmarDatos() {
+    const torneoEsAmistoso = this.selectedTorneo === 'Partido Amistoso';
+
+    const jornadaValida = torneoEsAmistoso || this.selectedJornada;
+
     if (
       this.selectedTorneo &&
       this.rival &&
       this.selectedTeamFromModal &&
-      this.selectedLocalia
+      this.selectedLocalia &&
+      jornadaValida
     ) {
       const storage = JSON.parse(localStorage.getItem('eventosData') || '{}');
 
@@ -132,6 +142,7 @@ export class MainComponent implements OnInit {
         rival: this.rival,
         equipo: this.selectedTeamFromModal,
         localia: this.selectedLocalia,
+        jornada: this.selectedJornada || '', // ← por si es amistoso
       };
 
       localStorage.setItem('partidoData', JSON.stringify(partidoData));
@@ -357,6 +368,7 @@ export class MainComponent implements OnInit {
 
   timeChange(event: any) {
     this.time = this.convertToTimeFormat(event.target.value);
+    localStorage.setItem('tiempoPartido', this.tiempoPartido);
   }
 
   onKeyDown(event: KeyboardEvent): void {

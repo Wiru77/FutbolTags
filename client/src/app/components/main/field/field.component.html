@@ -93,7 +93,7 @@
 
 <!--ANGULOOOOOOOS-->
 
-<!--MODAAAAAAL-->
+<!--MODAAAAAAL DE ANGULO-->
 
 <div class="modal fade" id="cambiarAngulo" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
@@ -114,16 +114,25 @@
           automáticamente con los ángulos restantes.
         </p>
         <div class="angulos-container">
+          <div class="valores-angulos text-center mt-3">
+            <strong>Ángulo frontal:</strong>
+            <p>{{ angulo1 * 2 | number : "1.0-1" }}°</p>
+          </div>
+
           <div id="recuadro-angulos">
             <div #flecha1 id="flecha1"></div>
             <div #flecha2 id="flecha2"></div>
-            <div class="mover-container">
-              <button id="arriba" (click)="moverArriba()">
-                <strong>↑</strong>
-              </button>
-              <button id="abajo" (click)="moverAbajo()">
-                <strong>↓</strong>
-              </button>
+            <div id="recuadro-botones">
+              <strong id="abrir">Abrir ángulo</strong>
+              <div class="mover-container">
+                <button id="arriba" (click)="moverArriba()">
+                  <strong>↑</strong>
+                </button>
+                <button id="abajo" (click)="moverAbajo()">
+                  <strong>↓</strong>
+                </button>
+              </div>
+              <strong id="cerrar">Cerrar ángulo</strong>
             </div>
           </div>
         </div>

@@ -114,6 +114,7 @@
           maxlength="4"
           pattern="[0-5][0-9]:[0-5][0-9]"
           placeholder="MM:SS"
+          [(ngModel)]="tiempoPartido"
           (keydown)="onKeyDown($event)"
           (keyup)="timeChange($event)"
         />

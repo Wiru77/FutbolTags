@@ -1,0 +1,122 @@
+<app-nav></app-nav>
+
+<div class="header">
+  <button
+    class="btn-back"
+    [routerLink]="['/panel/gestion/areamedica', jugador?.equipo_id[0]]"
+  >
+    ← Volver
+  </button>
+  <h1>Área Médica / {{ jugador?.nombre }}</h1>
+</div>
+
+<div class="content-wrapper">
+  <div class="top-bar">
+    <div class="left-actions">
+      <!-- ✅ BOTÓN PARA SUBIR ARCHIVO -->
+      <label
+        class="btn blue"
+        data-bs-toggle="modal"
+        data-bs-target="#modalAsignarMedicamento"
+      >
+        <i class="fas fa-upload" id="subir-button"></i>
+        Asignarle Medicamento
+      </label>
+    </div>
+  </div>
+
+  <h3 class="mt-4">Archivos Subidos</h3>
+
+  <div class="archivo-card" *ngFor="let archivo of jugador?.areamedica">
+    <i class="fas fa-pills"></i>
+    <div class="info">
+      <strong>
+        {{ archivo.medicamento[0]?.nombre || "Medicamento" }}
+      </strong>
+      <br />
+      <small class="text-muted">Cantidad: {{ archivo.cantidad }}</small>
+      <br />
+      <small class="text-muted">Notas: {{ archivo.notas }}</small>
+    </div>
+    <button
+      class="icon-delete"
+      (click)="eliminarAsignacionMedicamento(archivo._id)"
+      title="Eliminar asignación"
+    >
+      🗑
+    </button>
+  </div>
+</div>
+
+<!-- MODAL: Asignar Medicamento al Jugador -->
+<div
+  class="modal fade"
+  id="modalAsignarMedicamento"
+  tabindex="-1"
+  aria-labelledby="modalAsignarLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Asignar Medicamento</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Nombre del medicamento seleccionado -->
+        <div class="mb-3">
+          <label class="form-label">Medicamento</label>
+          <select
+            class="form-select"
+            [(ngModel)]="asignacion.medicamento_id"
+            name="medicamento_id"
+            required
+          >
+            <option [ngValue]="''" disabled>
+              -- Selecciona un medicamento --
+            </option>
+            <option *ngFor="let med of medicamentos" [value]="med._id">
+              {{ med.nombre }} ({{ med.presentacion }}) - {{ med.cantidad }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Cantidad -->
+        <div class="mb-3">
+          <label class="form-label">Cantidad</label>
+          <input
+            type="number"
+            class="form-control"
+            [(ngModel)]="asignacion.cantidad"
+            name="cantidad"
+            required
+            min="1"
+          />
+        </div>
+
+        <!-- Notas -->
+        <div class="mb-3">
+          <label class="form-label">Notas</label>
+          <textarea
+            class="form-control"
+            rows="3"
+            [(ngModel)]="asignacion.notas"
+            name="notas"
+          ></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button class="btn btn-primary" (click)="asignarMedicamento()">
+          Asignar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

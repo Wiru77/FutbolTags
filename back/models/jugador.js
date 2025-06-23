@@ -48,19 +48,39 @@ var JugadorSchema = new Schema({
   pierna_habil: { type: String, required: true },
   equipo_procedencia: { type: String, required: true },
   portada: { type: String },
-  stats: { type: [StatSchema], default: [] }, // Usa el subesquema
+  stats: { type: [StatSchema], default: [] },
   asignado: { type: Boolean, default: false },
   titular: { type: Boolean, default: false },
   suplente: { type: Boolean, default: false },
-  equipo_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "equipo",
-  },
+  equipo_id: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "equipo",
+    },
+  ],
   usuario_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "admin",
     required: true,
   },
+  prepfisica: [{ type: Schema.Types.ObjectId, ref: "prepfisica" }],
+  administracion: [{ type: Schema.Types.ObjectId, ref: "administracion" }],
+  areamedica: [{ type: Schema.Types.ObjectId, ref: "areamedica" }],
+  casaclub: [{ type: Schema.Types.ObjectId, ref: "casaclub" }],
+  categorias: [{ type: Schema.Types.ObjectId, ref: "categorias" }],
+  cuerpotecnico: [{ type: Schema.Types.ObjectId, ref: "cuerpotecnico" }],
+  deshumano: [{ type: Schema.Types.ObjectId, ref: "deshumano" }],
+  fisioterapia: [{ type: Schema.Types.ObjectId, ref: "fisioterapia" }],
+  intdeportiva: [{ type: Schema.Types.ObjectId, ref: "intdeportiva" }],
+  nutricion: [{ type: Schema.Types.ObjectId, ref: "nutricion" }],
+  partidos: [{ type: Schema.Types.ObjectId, ref: "partidos" }],
+  porteros: [{ type: Schema.Types.ObjectId, ref: "porteros" }],
+  prensa: [{ type: Schema.Types.ObjectId, ref: "prensa" }],
+  psicologia: [{ type: Schema.Types.ObjectId, ref: "psicologia" }],
+  secretecnica: [{ type: Schema.Types.ObjectId, ref: "secretecnica" }],
+  tactico: [{ type: Schema.Types.ObjectId, ref: "tactico" }],
+  utileria: [{ type: Schema.Types.ObjectId, ref: "utileria" }],
+  visorias: [{ type: Schema.Types.ObjectId, ref: "visorias" }],
 });
 
 module.exports = mongoose.model("jugador", JugadorSchema);

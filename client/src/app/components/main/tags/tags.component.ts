@@ -118,23 +118,30 @@ export class TagsComponent implements OnInit {
       }
     );
 
-    // Obtener jugadores de la banca
-    this._equipoService.listar_jugadores_banca(this.equipoId).subscribe(
-      (response) => {
-        this.banca = Array.isArray(response.jugadores_banca)
-          ? response.jugadores_banca
-          : [];
-        this.filteredBanca = [...this.banca];
-        console.log(this.filteredBanca, 'banquiux');
-      },
-      (error) => {
-        console.error('Error al obtener los jugadores de la banca:', error);
-        this.banca = []; // prevenir errores de iteración
-      }
-    );
+    // ⚠️ Asegura que equipoId es válido antes de hacer la llamada
+    if (this.equipoId) {
+      this._equipoService.listar_jugadores_banca(this.equipoId)?.subscribe(
+        (response) => {
+          this.banca = Array.isArray(response.jugadores_banca)
+            ? response.jugadores_banca
+            : [];
+          this.filteredBanca = [...this.banca];
+          console.log(this.filteredBanca, 'banquiux');
+        },
+        (error) => {
+          console.error('Error al obtener los jugadores de la banca:', error);
+          this.banca = []; // prevenir errores de iteración
+        }
+      );
+    } else {
+      console.warn(
+        '⚠️ No se encontró equipoId, no se buscarán jugadores de banca.'
+      );
+      this.banca = [];
+      this.filteredBanca = [];
+    }
 
     // Obtener los tags
-
     this._tagService.listar_tags_filtro_admin(this.token).subscribe(
       (response: any) => {
         this.tags = response.data;

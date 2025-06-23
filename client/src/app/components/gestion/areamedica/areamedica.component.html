@@ -1,0 +1,142 @@
+<app-nav></app-nav>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Equipos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+</head>
+
+<div class="header">
+  <button class="btn-back" [routerLink]="['/panel/gestion']">← Volver</button>
+  <h1>Área Médica</h1>
+</div>
+
+<div class="container">
+  <div
+    *ngFor="let equipo of equipos"
+    class="card-button"
+    (click)="irADetalleEquipo(equipo._id)"
+  >
+    <i class="fas fa-folder"></i>
+    {{ equipo.nombre }}
+  </div>
+</div>
+
+<!--ENLISTADO DE MEDICAMENTOS -->
+<div class="header">
+  <h1>Lista de Medicamentos</h1>
+</div>
+<button
+  class="btn btn-outline-primary btn-sm mb-3"
+  data-bs-toggle="modal"
+  data-bs-target="#modalRegistrarMedicamento"
+>
+  Registrar nuevo medicamento
+</button>
+<div>
+  <!--Nuevo registro-->
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Nombre</th>
+        <th>Cantidad</th>
+        <th>Presentación</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody *ngFor="let medicamento of medicamentos; let i = index">
+      <tr>
+        <td>{{ i + 1 }}</td>
+        <td>{{ medicamento.nombre }}</td>
+        <td>{{ medicamento.cantidad }}</td>
+        <td>{{ medicamento.presentacion }}</td>
+        <td>
+          <!-- Icono de eliminación -->
+          <button
+            class="btn btn-sm btn-outline-danger"
+            (click)="eliminarMedicamento(medicamento._id)"
+            title="Eliminar"
+          >
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="modalRegistrarMedicamento"
+  tabindex="-1"
+  aria-labelledby="modalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Registrar Medicamento</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form #formMedicamento="ngForm">
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="nuevoMedicamento.nombre"
+              name="nombre"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Presentación</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="nuevoMedicamento.presentacion"
+              name="presentacion"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cantidad</label>
+            <input
+              type="number"
+              class="form-control"
+              [(ngModel)]="nuevoMedicamento.cantidad"
+              name="cantidad"
+              required
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="registrarMedicamento()"
+        >
+          Registrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,255 @@
+<app-nav></app-nav>
+<head>
+  <meta charset="UTF-8" />
+  <title>Equipos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+</head>
+
+<div class="header">
+  <button class="btn-back" [routerLink]="['/panel/gestion']">← Volver</button>
+  <h1>Utilería</h1>
+</div>
+<div class="container">
+  <div
+    *ngFor="let equipo of equipos"
+    class="card-button"
+    (click)="irADetalleEquipo(equipo._id)"
+  >
+    <i class="fas fa-folder"></i>
+    {{ equipo.nombre }}
+  </div>
+</div>
+
+<!--ENLISTADO -->
+<div class="header">
+  <h1>Lista de Materiales</h1>
+</div>
+<button
+  class="btn btn-outline-primary btn-sm mb-3"
+  data-bs-toggle="modal"
+  data-bs-target="#modalRegistrarMaterial"
+>
+  Registrar nuevo material
+</button>
+
+<!--Nuevo registro Material-->
+<div>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Nombre</th>
+        <th>Cantidad</th>
+        <th>Nota</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody *ngFor="let material of materiales; let i = index">
+      <tr>
+        <td>{{ i + 1 }}</td>
+        <td>{{ material.nombre }}</td>
+        <td>{{ material.cantidad }}</td>
+        <td>{{ material.nota }}</td>
+        <td>
+          <!-- Icono de eliminación -->
+          <button
+            class="btn btn-sm btn-outline-danger"
+            (click)="eliminarMaterial(material._id)"
+            title="Eliminar"
+          >
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!--ENLISTADO -->
+<div class="header">
+  <h1>Lista de Prendas</h1>
+</div>
+
+<button
+  class="btn btn-outline-primary btn-sm mb-3"
+  data-bs-toggle="modal"
+  data-bs-target="#modalRegistrarPrenda"
+>
+  Registrar nueva prenda
+</button>
+
+<!--Nuevo registro Prenda-->
+<div>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Nombre</th>
+        <th>Cantidad</th>
+        <th>Nota</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody *ngFor="let prenda of prendas; let i = index">
+      <tr>
+        <td>{{ i + 1 }}</td>
+        <td>{{ prenda.nombre }}</td>
+        <td>{{ prenda.cantidad }}</td>
+        <td>{{ prenda.nota }}</td>
+        <td>
+          <!-- Icono de eliminación -->
+          <button
+            class="btn btn-sm btn-outline-danger"
+            (click)="eliminarPrenda(prenda._id)"
+            title="Eliminar"
+          >
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal MATERIALES-->
+<div
+  class="modal fade"
+  id="modalRegistrarMaterial"
+  tabindex="-1"
+  aria-labelledby="modalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Registrar Material</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form #formMaterial="ngForm">
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="nuevoMaterial.nombre"
+              name="nombre"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Notas</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="nuevoMaterial.nota"
+              name="presentacion"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cantidad</label>
+            <input
+              type="number"
+              class="form-control"
+              [(ngModel)]="nuevoMaterial.cantidad"
+              name="cantidad"
+              required
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="registrarMaterial()"
+        >
+          Registrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal PRENDAS-->
+<div
+  class="modal fade"
+  id="modalRegistrarPrenda"
+  tabindex="-1"
+  aria-labelledby="modalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Registrar Prenda</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form #formPrenda="ngForm">
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="nuevaPrenda.nombre"
+              name="nombre"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Notas</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="nuevaPrenda.nota"
+              name="presentacion"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cantidad</label>
+            <input
+              type="number"
+              class="form-control"
+              [(ngModel)]="nuevaPrenda.cantidad"
+              name="cantidad"
+              required
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="registrarPrenda()"
+        >
+          Registrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

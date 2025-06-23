@@ -1,0 +1,52 @@
+<app-nav></app-nav>
+
+<div class="header">
+  <button
+    class="btn-back"
+    [routerLink]="['/panel/gestion/psicologia', jugador?.equipo_id[0]]"
+  >
+    ← Volver
+  </button>
+  <h1>Psicología / {{ jugador?.nombre }}</h1>
+</div>
+
+<div class="content-wrapper">
+  <div class="top-bar">
+    <div class="left-actions">
+      <!-- ✅ INPUT PARA EL NOMBRE -->
+      <input
+        type="text"
+        [(ngModel)]="nombreArchivo"
+        placeholder="Nombre del archivo"
+        class="form-control mb-2"
+      />
+
+      <!-- ✅ BOTÓN PARA SUBIR ARCHIVO -->
+      <label class="btn blue">
+        <i class="fas fa-upload" id="subir-button"></i> Subir Archivo
+        <input
+          type="file"
+          (change)="onFileSelected($event)"
+          hidden
+          accept=".pdf,.mp4"
+        />
+      </label>
+    </div>
+  </div>
+
+  <h3 class="mt-4">Archivos Subidos</h3>
+
+  <div class="archivo-card" *ngFor="let archivo of jugador?.psicologia">
+    <i class="fas fa-file-alt"></i>
+    <div class="info">
+      <strong>{{ archivo.nombre || archivo.pdf || archivo.video }}</strong
+      ><br />
+      <small class="text-muted">
+        {{ archivo.pdf ? "Archivo PDF" : "Archivo de Video" }}
+      </small>
+    </div>
+    <button class="icon-delete" (click)="eliminarArchivo(archivo._id)">
+      🗑
+    </button>
+  </div>
+</div>

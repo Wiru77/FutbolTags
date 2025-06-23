@@ -1,0 +1,225 @@
+<app-nav></app-nav>
+
+<div class="header">
+  <button
+    class="btn-back"
+    [routerLink]="['/panel/gestion/utileria', jugador?.equipo_id[0]]"
+  >
+    ← Volver
+  </button>
+  <h1>Utilería / {{ jugador?.nombre }}</h1>
+</div>
+
+<!-- ================== SECCIÓN DE MATERIALES ================== -->
+<div class="content-wrapper">
+  <div class="top-bar">
+    <div class="left-actions">
+      <label
+        class="btn blue"
+        data-bs-toggle="modal"
+        data-bs-target="#modalAsignarMaterial"
+      >
+        <i class="fas fa-upload" id="subir-button"></i>
+        Asignarle Material
+      </label>
+    </div>
+  </div>
+
+  <h3 class="mt-4">Materiales</h3>
+
+  <ng-container *ngFor="let archivo of jugador?.utileria">
+    <div class="archivo-card" *ngIf="archivo.material?.length">
+      <i class="fas fa-pills"></i>
+      <div class="info">
+        <strong>{{ archivo.material[0]?.nombre || "Material" }}</strong
+        ><br />
+        <small class="text-muted">Cantidad: {{ archivo.cantidad }}</small
+        ><br />
+        <small class="text-muted">Notas: {{ archivo.notas }}</small>
+      </div>
+      <button
+        class="icon-delete"
+        (click)="eliminarAsignacionMaterial(archivo._id)"
+        title="Eliminar asignación"
+      >
+        🗑
+      </button>
+    </div>
+  </ng-container>
+</div>
+
+<!-- ================== MODAL ASIGNAR MATERIAL ================== -->
+<div
+  class="modal fade"
+  id="modalAsignarMaterial"
+  tabindex="-1"
+  aria-labelledby="modalAsignarLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Asignar Material</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Material</label>
+          <select
+            class="form-select"
+            [(ngModel)]="asignacion.material_id"
+            name="material_id"
+            required
+          >
+            <option [ngValue]="''" disabled>
+              -- Selecciona un material --
+            </option>
+            <option *ngFor="let med of materiales" [value]="med._id">
+              {{ med.nombre }} ({{ med.presentacion }}) - {{ med.cantidad }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Cantidad</label>
+          <input
+            type="number"
+            class="form-control"
+            [(ngModel)]="asignacion.cantidad"
+            name="cantidad"
+            required
+            min="1"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Notas</label>
+          <textarea
+            class="form-control"
+            rows="3"
+            [(ngModel)]="asignacion.notas"
+            name="notas"
+          ></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button class="btn btn-primary" (click)="asignarMaterial()">
+          Asignar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================== SECCIÓN DE PRENDAS ================== -->
+<div class="content-wrapper">
+  <div class="top-bar">
+    <div class="left-actions">
+      <label
+        class="btn blue"
+        data-bs-toggle="modal"
+        data-bs-target="#modalAsignarPrenda"
+      >
+        <i class="fas fa-upload" id="subir-button"></i>
+        Asignarle Prenda
+      </label>
+    </div>
+  </div>
+
+  <h3 class="mt-4">Prendas</h3>
+
+  <ng-container *ngFor="let archivo of jugador?.utileria">
+    <div class="archivo-card" *ngIf="archivo.prenda?.length">
+      <i class="fas fa-pills"></i>
+      <div class="info">
+        <strong>{{ archivo.prenda[0]?.nombre || "Prenda" }}</strong
+        ><br />
+        <small class="text-muted">Cantidad: {{ archivo.cantidad }}</small
+        ><br />
+        <small class="text-muted">Notas: {{ archivo.notas }}</small>
+      </div>
+      <button
+        class="icon-delete"
+        (click)="eliminarAsignacionPrenda(archivo._id)"
+        title="Eliminar asignación"
+      >
+        🗑
+      </button>
+    </div>
+  </ng-container>
+</div>
+
+<!-- ================== MODAL ASIGNAR PRENDA ================== -->
+<div
+  class="modal fade"
+  id="modalAsignarPrenda"
+  tabindex="-1"
+  aria-labelledby="modalAsignarLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Asignar Prenda</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Prenda</label>
+          <select
+            class="form-select"
+            [(ngModel)]="asignacion.prenda_id"
+            name="prenda_id"
+            required
+          >
+            <option [ngValue]="''" disabled>-- Selecciona una prenda --</option>
+            <option *ngFor="let med of prendas" [value]="med._id">
+              {{ med.nombre }} ({{ med.presentacion }}) - {{ med.cantidad }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Cantidad</label>
+          <input
+            type="number"
+            class="form-control"
+            [(ngModel)]="asignacion.cantidad"
+            name="cantidad"
+            required
+            min="1"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Notas</label>
+          <textarea
+            class="form-control"
+            rows="3"
+            [(ngModel)]="asignacion.notas"
+            name="notas"
+          ></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button class="btn btn-primary" (click)="asignarPrenda()">
+          Asignar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

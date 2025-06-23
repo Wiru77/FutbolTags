@@ -1,0 +1,31 @@
+<app-nav></app-nav>
+<div class="header">
+  <button class="btn-back" [routerLink]="['/panel/gestion/fisioterapia']">
+    ← Volver
+  </button>
+  <h1>Fisioterapia / {{ equipo?.nombre }}</h1>
+</div>
+
+<div class="content-wrapper">
+  <div class="top-bar">
+    <div class="left-actions"></div>
+  </div>
+
+  <div class="container">
+    <ng-container *ngIf="jugadores && jugadores.length > 0; else vacio">
+      <div
+        *ngFor="let jugador of jugadores"
+        class="card-button"
+        (click)="irADetalleJugador(jugador._id)"
+      >
+        <i class="fas fa-folder"></i>
+        {{ jugador.nombre }}
+      </div>
+    </ng-container>
+    <ng-template #vacio>
+      <div class="empty-message">
+        Esta carpeta está vacía o no contiene elementos específicos.
+      </div>
+    </ng-template>
+  </div>
+</div>
